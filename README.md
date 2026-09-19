@@ -1,103 +1,103 @@
 ﻿# Thiago Solutions Digitais
 
-Plataforma de gestão multiempresa desenvolvida em **Angular, NestJS e MongoDB**. O projeto começou como um MVP para produção e venda de salgados e evoluiu para reunir operações, despesas, tesouraria, relacionamento com clientes e gestão comercial de assinaturas.
+A multi-company management platform built with **Angular, NestJS, and MongoDB**. The project started as an MVP for producing and selling savory snacks and grew to bring together operations, expenses, treasury management, customer relationships, and subscription management.
 
-Cada empresa mantém seus próprios dados, usuários, cargos e configurações. O acesso combina situação da empresa, assinatura vigente, módulos contratados e permissões por ação. O administrador da plataforma possui uma área separada para aprovações e gestão comercial.
+Each company maintains its own data, users, roles, and settings. Access depends on company status, a valid subscription, subscribed modules, and permissions for individual actions. The platform administrator has a separate area for approvals and commercial management.
 
-**Estado do projeto:** desenvolvimento ativo, com módulos em diferentes estágios de maturidade. A existência de uma tela ou endpoint não significa cobertura completa nem prontidão para produção. Os relatórios em `docs/` são registros datados; esta revisão do README foi baseada na leitura do código e não representa uma nova execução de testes.
+**Project status:** active development, with modules at different stages of maturity. The presence of a screen or endpoint does not imply complete coverage or production readiness. Reports in `docs/` are dated records; this README revision was based on code inspection and does not represent a new test run.
 
-## Conteúdo
+## Contents
 
-- [Funcionalidades](#funcionalidades)
-- [Arquitetura e tecnologias](#arquitetura-e-tecnologias)
-- [Preparação local](#preparação-local)
-- [Configuração](#configuração)
-- [Primeiro acesso](#primeiro-acesso)
-- [Comandos e validação](#comandos-e-validação)
-- [Regras de negócio e segurança](#regras-de-negócio-e-segurança)
-- [Limitações](#limitações)
-- [Documentação e contribuição](#documentação-e-contribuição)
+- [Features](#features)
+- [Architecture and technologies](#architecture-and-technologies)
+- [Local setup](#local-setup)
+- [Configuration](#configuration)
+- [First access](#first-access)
+- [Commands and validation](#commands-and-validation)
+- [Business rules and security](#business-rules-and-security)
+- [Limitations](#limitations)
+- [Documentation and contributing](#documentation-and-contributing)
 
-## Funcionalidades
+## Features
 
-| Área | Capacidades presentes |
+| Area | Available capabilities |
 | --- | --- |
-| Empresas e usuários | Cadastro e aprovação de empresas, solicitação de acesso, membros, cargos personalizados e permissões por ação. |
-| Produtos e vitrine | Categorias por empresa, produtos de fabricação própria/revenda, imagens, disponibilidade por estoque ou sob demanda e vitrine pública em `/empresa/:slug`. |
-| Vendas e produção | Pedidos, pagamentos, registros de produção, movimentações de estoque e atualização em tempo real. |
-| Estoque e qualidade | Insumos, fichas técnicas, recebimentos, ajustes de estoque e devoluções com avaliação e destino. |
-| Despesas | Despesas operacionais/pessoais, custos de produção, categorias, recorrências, pagamentos PF/PJ, comprovantes privados e histórico. |
-| Financeiro | Contas de tesouraria, recebíveis/pagáveis, baixas e integração com cobranças de outros módulos. |
-| Contábil | Plano de contas, lançamentos equilibrados, razão, demonstrativos auxiliares, fechamentos e obrigações. |
-| Cadastros e CRM | Contatos centrais, clientes/fornecedores, oportunidades e acompanhamento comercial. |
-| Serviços e contratos | Agenda/ordens de serviço, contratos de clientes, aditivos e geração explícita de cobranças. |
-| Fidelidade | Programas, adesões, registro de pontos, validade, resgate e estorno. |
-| Projetos | Projetos, escopo, equipe, tarefas, dependências, revisão, comentários e horas registradas manualmente. |
-| Compras | Pedidos a fornecedores, aprovação, recebimentos parciais e integrações condicionais com estoque e tesouraria. |
-| Logística | Ordens, remessas, rotas/paradas, despacho, tentativas, confirmação de recebimento e retorno. |
-| BI | Indicadores internos, fontes externas via CSV, metas, filtros e exportação. |
-| Documentos e filiais | Arquivos privados versionados e compartilhados; cadastro de unidades, responsáveis e membros. |
-| Plataforma comercial | Ofertas e preços versionados, planos, módulos, descontos, cupons, assinaturas, quotas, cobranças manuais e solicitações. |
-| Site institucional | Apresentação de soluções, recomendação de módulos e solicitação de contato comercial. |
+| Companies and users | Company registration and approval, access requests, membership, custom roles, and permissions for individual actions. |
+| Products and storefront | Categories per company, manufactured/resale products, images, availability based on stock or made-to-order supply, and a public storefront at `/empresa/:slug`. |
+| Sales and production | Orders, payments, production records, stock movements, and real-time updates. |
+| Inventory and quality | Ingredients, production recipes, receipts, stock adjustments, and returns with assessment and disposition. |
+| Expenses | Operating/personal expenses, production costs, categories, recurring entries, payments from personal/business funds (PF/PJ), private supporting documents, and history. |
+| Finance | Treasury accounts, receivables/payables, settlements, and integration with billing from other modules. |
+| Accounting | Chart of accounts, balanced journal entries, general ledger, supplementary statements, period closing, and obligations. |
+| Master data and CRM | Shared contacts, customers/suppliers, opportunities, and sales follow-up. |
+| Services and contracts | Scheduling/service orders, customer contracts, amendments, and explicitly triggered billing. |
+| Loyalty | Programs, enrollment, point recording, expiration, redemption, and reversal. |
+| Projects | Projects, scope, teams, tasks, dependencies, review, comments, and manually recorded hours. |
+| Purchasing | Supplier orders, approval, partial receipts, and conditional integrations with inventory and treasury. |
+| Logistics | Orders, shipments, routes/stops, dispatch, delivery attempts, receipt confirmation, and returns. |
+| BI | Internal metrics, external CSV data sources, targets, filters, and exports. |
+| Documents and branches | Private files with versioning and sharing; branch records, managers, and members. |
+| Commercial platform | Versioned offers and pricing, plans, modules, discounts, coupons, subscriptions, quotas, manual billing, and requests. |
+| Company website | Solution descriptions, module recommendations, and sales contact requests. |
 
-A vitrine não oferece checkout público. A contratação comercial controla quais capacidades uma empresa pode utilizar; o catálogo não deve ser interpretado como garantia de implementação integral de cada módulo.
+The storefront does not offer public checkout. Subscriptions control which capabilities a company can use; the catalog should not be interpreted as a guarantee that every module is fully implemented.
 
-Na navegação atual, **Despesas** corresponde a `/despesas`, **Financeiro** a `/financeiro` e **Contábil** a `/contabil`. Documentos antigos podem usar “Financeiro” para a área de despesas. A funcionalidade de registro de ponto foi removida; referências históricas não representam uma capacidade atual.
+In the current navigation, **Expenses** corresponds to `/despesas`, **Finance** to `/financeiro`, and **Accounting** to `/contabil`. Older documents may use “Financeiro” for the expenses area. The time clock feature has been removed; historical references do not represent a current capability.
 
-## Arquitetura e tecnologias
+## Architecture and technologies
 
-| Camada | Tecnologia |
+| Layer | Technology |
 | --- | --- |
-| Interface | Angular 22, componentes standalone, rotas lazy, TypeScript e SCSS |
-| API | NestJS 12, Node.js, Express, validação de DTOs e módulos por domínio |
-| Persistência | MongoDB, Mongoose 9, coleções v2 e índices explícitos |
-| Sessão | JWT em cookie HttpOnly, proteção CSRF e autorização no backend |
-| Eventos | Socket.IO |
-| Testes | Vitest, scripts Node.js e navegação com Playwright Core/Chrome |
+| Frontend | Angular 22, standalone components, lazy-loaded routes, TypeScript, and SCSS |
+| API | NestJS 12, Node.js, Express, DTO validation, and domain modules |
+| Persistence | MongoDB, Mongoose 9, v2 collections, and explicitly provisioned indexes |
+| Sessions | JWT in an HttpOnly cookie, CSRF protection, and backend authorization |
+| Events | Socket.IO |
+| Testing | Vitest, Node.js scripts, and browser testing with Playwright Core/Chrome |
 
 ```text
 apps/
   api/
     src/
-      auth/ tenants/ users/ roles/   Identidade e autorização
-      commerce/                     Planos, assinaturas e cobranças
-      products/ catalog/            Produtos e vitrine
+      auth/ tenants/ users/ roles/   Identity and authorization
+      commerce/                     Plans, subscriptions, and billing
+      products/ catalog/            Products and storefront
       orders/ productions/ inventory/
-      finance/ business/            Despesas, tesouraria e contábil
+      finance/ business/            Expenses, treasury, and accounting
       crm/ service-orders/ contracts/ loyalty/
       projects/ purchases/ logistics/ bi/
       documents/ branches/ portfolio/ audit/ events/
   web/
     src/app/
-      core/                         Sessão, modelos e clientes HTTP
-      layout/                       Navegação e estrutura visual
-      features/                     Telas por domínio
-scripts/                            QA, diagnósticos e provisionamento
-docs/                               Contratos, manuais e relatórios
+      core/                         Sessions, models, and HTTP clients
+      layout/                       Navigation and page layout
+      features/                     Screens by domain
+scripts/                            QA, diagnostics, and provisioning
+docs/                               Contracts, manuals, and reports
 ```
 
-A API usa o prefixo `/api`. O build raiz compila a interface, copia a SPA para `apps/api/public` e compila o NestJS. O servidor pode servir interface e API na mesma origem. O monorepo possui três instalações npm e seus respectivos lockfiles; não usa npm workspaces.
+The API uses the `/api` prefix. The root build compiles the frontend, copies the SPA to `apps/api/public`, and compiles NestJS. The server can serve both the frontend and API from the same origin. The monorepo has three npm installations with their own lockfiles; it does not use npm workspaces.
 
-## Preparação local
+## Local setup
 
-Os exemplos abaixo usam **PowerShell**, executados na raiz de um clone ou cópia deste repositório. Em outros sistemas, adapte a sintaxe das variáveis de ambiente.
+The examples below use **PowerShell**, run from the root of a clone or copy of this repository. On other systems, adapt the environment variable syntax.
 
-Pré-requisitos:
+Prerequisites:
 
-- Node.js 24 e npm; os pacotes declaram Angular 22 e NestJS 12.
-- MongoDB disponível em `127.0.0.1:27017`.
-- **Replica set ou mongos para fluxos transacionais**, incluindo cadastro/aprovação e mutações comerciais. MongoDB standalone não permite validar esses fluxos integralmente.
-- Chrome local para as suítes que incluem navegador; `playwright-core` não instala um navegador automaticamente.
+- Node.js 24 and npm; the packages declare Angular 22 and NestJS 12.
+- MongoDB available at `127.0.0.1:27017`.
+- **A replica set or mongos for transactional workflows**, including registration/approval and commercial mutations. Standalone MongoDB does not support full validation of these workflows.
+- A local Chrome installation for suites that include browser testing; `playwright-core` does not install a browser automatically.
 
-Toda aplicação local de QA e toda escrita de teste devem utilizar exclusivamente:
+Every local QA application and every test write must use only:
 
 ```text
 mongodb://127.0.0.1:27017/salgados_financeiro_test
 ```
 
-Preserve dados anteriores, inclusive fixtures de execuções passadas. Não apague bancos, coleções ou registros, não reinicialize volumes e não use `syncIndexes` para remover índices. O banco operacional `salgados_mvp` não faz parte deste procedimento.
+Preserve existing data, including fixtures from previous runs. Do not delete databases, collections, or records, reset volumes, or use `syncIndexes` to remove indexes. The operational database `salgados_mvp` is outside the scope of this procedure.
 
-### 1. Instalar e compilar
+### 1. Install and build
 
 ```powershell
 git clone https://github.com/ThiagoFND/thiago-solutions-gestao.git
@@ -112,26 +112,26 @@ npm run build
 npm test
 ```
 
-`npm ci` utiliza as versões dos lockfiles. `npm run install:all` é uma alternativa existente para instalar as dependências dos dois aplicativos com `npm install`.
+`npm ci` uses the versions in the lockfiles. The existing `npm run install:all` command is an alternative that installs dependencies for both applications with `npm install`.
 
-### 2. Exercitar a aplicação isolada
+### 2. Exercise the isolated application
 
-Após o build, com MongoDB transacional disponível e as duas variáveis de banco acima definidas:
+After building, with transactional MongoDB available and both database variables above set:
 
 ```powershell
 $env:COMMERCE_BROWSER='true'
 npm run test:commerce
 ```
 
-A suíte comercial usa uma API temporária em `http://127.0.0.1:4341`, provisiona coleções/índices aditivamente, cria identidades exclusivas de teste, executa cenários e encerra a aplicação. O harness fornece segredos temporários próprios e registra a preservação dos documentos anteriores. Os dados criados pela execução permanecem no banco. Credenciais de fixture não são contas padrão para uso manual.
+The commercial suite uses a temporary API at `http://127.0.0.1:4341`, provisions collections/indexes additively, creates unique test identities, runs scenarios, and shuts down the application. The harness supplies its own temporary secrets and records the preservation of existing documents. Data created during the run remains in the database. Fixture credentials are not default accounts for manual use.
 
-Defina `COMMERCE_BROWSER='false'` para executar sem a parte de navegador. Suítes que exigem transações podem falhar em standalone; isso deve ser registrado como limitação do ambiente, sem substituir o banco autorizado. Não encerre serviços de outras pessoas para liberar portas e execute suítes com escrita sequencialmente.
+Set `COMMERCE_BROWSER='false'` to skip the browser portion. Suites that require transactions may fail on a standalone instance; record this as an environment limitation without switching to another database. Do not stop other people's services to free ports, and run suites that write data sequentially.
 
-### 3. Usar a interface manualmente
+### 3. Use the interface manually
 
-O uso manual requer configuração persistente, coleções/índices provisionados e primeiro administrador criado explicitamente. Siga [Implantação de usuários e empresas](docs/users-tenancy-deployment.md) e [Assinatura obrigatória](docs/assinatura-acesso-obrigatorio.md) antes de iniciar.
+Manual use requires persistent configuration, provisioned collections/indexes, and an explicitly created first administrator. Follow [User and company deployment](docs/users-tenancy-deployment.md) and [Mandatory subscriptions](docs/assinatura-acesso-obrigatorio.md) before starting.
 
-O arquivo `apps/api/.env.example` é um modelo sem credenciais. Copie-o para `apps/api/.env` somente se esse arquivo ainda não existir e preencha os campos descritos abaixo. Configure nele a mesma URI de teste e mantenha as duas variáveis de banco explícitas no terminal.
+The `apps/api/.env.example` file is a template without credentials. Copy it to `apps/api/.env` only if that file does not already exist, then fill in the fields described below. Configure the same test URI there and keep both database variables explicitly set in the terminal.
 
 ```powershell
 $env:TEST_MONGODB_URI='mongodb://127.0.0.1:27017/salgados_financeiro_test'
@@ -140,125 +140,125 @@ $env:LEAD_EMAIL_ENABLED='false'
 npm run dev
 ```
 
-A interface de desenvolvimento fica em `http://localhost:4200` e a API em `http://localhost:3000/api`. A origem usada no navegador precisa estar autorizada em `FRONTEND_URL`. O script `dev` expõe o servidor Angular em `0.0.0.0`; considere isso ao escolher a rede local.
+The development frontend is available at `http://localhost:4200` and the API at `http://localhost:3000/api`. The browser's origin must be authorized in `FRONTEND_URL`. The `dev` script exposes the Angular server on `0.0.0.0`; account for this when choosing a local network.
 
-O `docker-compose.yml` existente inicia MongoDB com autenticação e volume persistente, mas **não configura replica set nem provisiona contas automaticamente**. Ele não substitui os pré-requisitos transacionais. Não o inicie sobre uma porta já utilizada pelo MongoDB local.
+The existing `docker-compose.yml` starts MongoDB with authentication and a persistent volume, but **does not configure a replica set or provision accounts automatically**. It does not replace the transactional prerequisites. Do not start it on a port already used by local MongoDB.
 
-## Configuração
+## Configuration
 
-Configure segredos somente no servidor, usando ambiente ou arquivo local não versionado. Nunca coloque chaves no Angular, no README, em capturas de tela ou nos argumentos de comandos.
+Configure secrets only on the server, using environment variables or an untracked local file. Never put keys in Angular, the README, screenshots, or command arguments.
 
-| Variável | Uso |
+| Variable | Purpose |
 | --- | --- |
-| `MONGODB_URI` | Obrigatória; nos exemplos e em QA, exatamente a URI de teste acima. Não há fallback operacional no código atual. |
-| `TEST_MONGODB_URI` | Trava dos scripts de QA; exige a mesma URI exata. |
-| `MONGODB_USER` / `MONGODB_PASSWORD` | Credenciais opcionais locais, fornecidas em conjunto. Produção exige autenticação. |
-| `MONGODB_TLS` / `MONGODB_TLS_CA_FILE` | TLS e certificado de CA quando necessário. Produção exige TLS. |
-| `JWT_SECRET` | Segredo aleatório com pelo menos 32 bytes; não há valor padrão. |
-| `CPF_ENCRYPTION_KEY` | 32 bytes aleatórios codificados em base64 para criptografia. |
-| `CPF_HASH_KEY` | Outros 32 bytes aleatórios em base64, independentes da chave de criptografia. |
-| `TENANCY_V2_ENABLED` | Deve ser `true` após preparar o armazenamento v2. O exemplo começa desabilitado. |
-| `TENANCY_NEW_INSTALLATION` | Declaração explícita de instalação nova; não substitui provisionamento. Produção exige essa declaração ou manifesto de migração concluída. |
-| `FRONTEND_URL` | Origens HTTP(S) exatas separadas por vírgula; local: `http://localhost:4200,http://127.0.0.1:4200`. |
-| `NODE_ENV` / `PORT` | Ambiente de execução e porta da API; porta padrão `3000`. |
-| `HTTPS_ENABLED` | Deve ser `true` em produção, com origens HTTPS e terminação TLS configurada. |
-| `BUSINESS_UTC_OFFSET` | Deslocamento de horário configurável para regras que o utilizam; exemplo `-03:00`. |
-| `RATE_LIMIT_*` | Limites de requisições por grupo; consulte o `.env.example` e a configuração de segurança. |
-| `ATTACHMENT_STORAGE_DIR` | Diretório privado de anexos; em QA o harness separa arquivos por execução. |
-| `LEAD_EMAIL_ENABLED` | Habilita envio de contatos comerciais; mantenha `false` em QA manual. |
-| `RESEND_API_KEY` / `LEAD_EMAIL_FROM` | Configuração opcional do transporte de e-mail, com remetente validado. |
-| `CHROME_PATH` | Caminho do Chrome para scripts de navegador que aceitam essa opção. |
+| `MONGODB_URI` | Required; in these examples and in QA, it must exactly match the test URI above. The current code has no operational database fallback. |
+| `TEST_MONGODB_URI` | Safety check for QA scripts; requires the same exact URI. |
+| `MONGODB_USER` / `MONGODB_PASSWORD` | Optional local credentials, supplied together. Production requires authentication. |
+| `MONGODB_TLS` / `MONGODB_TLS_CA_FILE` | TLS and a CA certificate when needed. Production requires TLS. |
+| `JWT_SECRET` | A random secret of at least 32 bytes; there is no default value. |
+| `CPF_ENCRYPTION_KEY` | 32 random bytes encoded in base64 for encryption. |
+| `CPF_HASH_KEY` | Another 32 random bytes encoded in base64, independent of the encryption key. |
+| `TENANCY_V2_ENABLED` | Must be `true` after preparing v2 storage. The example starts with it disabled. |
+| `TENANCY_NEW_INSTALLATION` | Explicit declaration of a new installation; does not replace provisioning. Production requires this declaration or a completed migration manifest. |
+| `FRONTEND_URL` | Exact HTTP(S) origins separated by commas; locally: `http://localhost:4200,http://127.0.0.1:4200`. |
+| `NODE_ENV` / `PORT` | Runtime environment and API port; the default port is `3000`. |
+| `HTTPS_ENABLED` | Must be `true` in production, with HTTPS origins and TLS termination configured. |
+| `BUSINESS_UTC_OFFSET` | Configurable time offset for rules that use it; example: `-03:00`. |
+| `RATE_LIMIT_*` | Request limits by group; see `.env.example` and the security configuration. |
+| `ATTACHMENT_STORAGE_DIR` | Private attachment directory; in QA, the harness separates files by run. |
+| `LEAD_EMAIL_ENABLED` | Enables sending sales contact emails; keep it `false` during manual QA. |
+| `RESEND_API_KEY` / `LEAD_EMAIL_FROM` | Optional email transport configuration, with a verified sender. |
+| `CHROME_PATH` | Chrome executable path for browser scripts that support this option. |
 
-As chaves de CPF devem ser guardadas de forma persistente e segura; gerar outras a cada reinício impede recuperar dados criptografados com as anteriores. `JWT_REFRESH_SECRET` não é utilizado. A antiga flag `COMMERCIAL_ENTITLEMENTS_ENABLED` não desabilita a exigência de assinatura no código atual.
+CPF keys must be stored persistently and securely; generating new ones on every restart prevents recovery of data encrypted with the previous keys. `JWT_REFRESH_SECRET` is not used. The old `COMMERCIAL_ENTITLEMENTS_ENABLED` flag does not disable the subscription requirement in the current code.
 
-## Primeiro acesso
+## First access
 
-Não existem usuário ou senha padrão e a API não cria automaticamente o administrador inicial.
+There is no default username or password, and the API does not automatically create the initial administrator.
 
-1. Prepare coleções e índices v2 de forma aditiva. Os scripts `tenancy-storage.mjs`, `commerce-storage.mjs` e `portfolio-storage.mjs` possuem escopos diferentes e estão restritos ao banco de teste; consulte seus modos antes de aplicar mudanças.
-2. Crie o primeiro `PLATFORM_ADMIN` com `scripts/create-platform-admin.mjs`, conforme o [procedimento de provisionamento](docs/users-tenancy-deployment.md). Ele exige MongoDB transacional e dados recebidos pelo ambiente.
-3. Acesse `/plataforma/login` com e-mail e senha. O painel `/plataforma/empresas` concentra a administração global.
-4. Cadastre uma empresa em `/cadastrar-empresa`. A empresa/proprietário aguardam aprovação. Funcionários usam `/solicitar-acesso` e recebem um cargo na aprovação.
-5. Prepare ofertas e uma assinatura válida para a empresa. Aprovar cadastro não contrata módulos automaticamente.
-6. O acesso empresarial em `/login` usa CNPJ, e-mail e senha. Sem assinatura válida, operações empresariais ficam bloqueadas, mantendo os caminhos necessários para perfil e regularização.
+1. Prepare v2 collections and indexes additively. The `tenancy-storage.mjs`, `commerce-storage.mjs`, and `portfolio-storage.mjs` scripts have different scopes and are restricted to the test database; review their modes before applying changes.
+2. Create the first `PLATFORM_ADMIN` with `scripts/create-platform-admin.mjs`, following the [provisioning procedure](docs/users-tenancy-deployment.md). It requires transactional MongoDB and input supplied through environment variables.
+3. Open `/plataforma/login` and sign in with an email and password. The `/plataforma/empresas` dashboard brings together global administration.
+4. Register a company at `/cadastrar-empresa`. The company/owner await approval. Employees use `/solicitar-acesso` and receive a role upon approval.
+5. Prepare offers and a valid subscription for the company. Approving registration does not automatically subscribe the company to modules.
+6. Company login at `/login` uses CNPJ, email, and password. Without a valid subscription, company operations are blocked, while the routes needed to access the profile and resolve the subscription remain available.
 
-Cargos personalizados definem ações permitidas; `OWNER` e `PLATFORM_ADMIN` mantêm responsabilidades próprias. Papéis legados existem para compatibilidade, mas não substituem a configuração atual de permissões e módulos.
+Custom roles define allowed actions; `OWNER` and `PLATFORM_ADMIN` retain their own responsibilities. Legacy roles exist for compatibility, but do not replace the current permission and module configuration.
 
-## Comandos e validação
+## Commands and validation
 
-Execute os comandos a partir da raiz. Para qualquer teste, mantenha `TEST_MONGODB_URI` e `MONGODB_URI` configuradas com a URI exclusiva indicada acima.
+Run commands from the repository root. For every test, keep `TEST_MONGODB_URI` and `MONGODB_URI` set to the exclusive URI specified above.
 
-| Comando | Finalidade |
+| Command | Purpose |
 | --- | --- |
-| `npm run dev` | API e Angular em desenvolvimento, após configuração/provisionamento. |
-| `npm run build` | Build Angular, cópia da SPA e build NestJS. |
-| `npm run build --prefix apps/api` | Compila somente a API. |
-| `npm run build --prefix apps/web` | Compila a interface e verifica templates. |
-| `npm test` | Suíte Vitest da API. |
-| `npm run test:watch --prefix apps/api` | Vitest em modo observação. |
-| `npm run lint --prefix apps/api` | Análise estática com Oxlint. |
-| `npm run test:commerce` | Integração comercial e opção de navegador. |
-| `npm run test:catalog` | Cenários de catálogo, vitrine e permissões. |
-| `npm run test:tenancy` | Cenários de usuários e isolamento entre empresas. |
-| `npm run test:migration` | Diagnóstico/dry-run de migração; depende de fixture legada e não aplica migração. |
-| `npm run commerce:diagnose` | Diagnóstico do armazenamento comercial, sem aplicação. |
-| `node scripts/portfolio-storage.mjs --diagnose` | Diagnóstico dos modelos do portfólio, após build da API. |
-| `node scripts/security-bundle-scan.mjs` | Varredura heurística dos bundles compilados. |
-| `npm run start:prod` | Executa a API compilada; não provisiona banco nem define o ambiente de produção. |
+| `npm run dev` | Runs the API and Angular in development after configuration/provisioning. |
+| `npm run build` | Builds Angular, copies the SPA, and builds NestJS. |
+| `npm run build --prefix apps/api` | Compiles only the API. |
+| `npm run build --prefix apps/web` | Compiles the frontend and checks templates. |
+| `npm test` | Runs the API's Vitest suite. |
+| `npm run test:watch --prefix apps/api` | Runs Vitest in watch mode. |
+| `npm run lint --prefix apps/api` | Performs static analysis with Oxlint. |
+| `npm run test:commerce` | Runs commercial integration scenarios, with optional browser testing. |
+| `npm run test:catalog` | Runs catalog, storefront, and permission scenarios. |
+| `npm run test:tenancy` | Runs user and company isolation scenarios. |
+| `npm run test:migration` | Runs migration diagnostics/dry-run; requires a legacy fixture and does not apply a migration. |
+| `npm run commerce:diagnose` | Diagnoses commercial storage without applying changes. |
+| `node scripts/portfolio-storage.mjs --diagnose` | Diagnoses portfolio models after the API build. |
+| `node scripts/security-bundle-scan.mjs` | Performs a heuristic scan of compiled bundles. |
+| `npm run start:prod` | Runs the compiled API; does not provision the database or set the production environment. |
 
-Há também scripts específicos, como `crm-integration.mjs`, `projects-integration.mjs`, `purchases-integration.mjs`, `documents-integration.mjs` e `branches-integration.mjs`. Confira os requisitos de cada suíte antes de executar. Testes antigos podem precisar de fixtures compatíveis com as regras atuais de produto, permissões e assinatura.
+There are also dedicated scripts such as `crm-integration.mjs`, `projects-integration.mjs`, `purchases-integration.mjs`, `documents-integration.mjs`, and `branches-integration.mjs`. Check each suite's requirements before running it. Older tests may need fixtures compatible with current product, permission, and subscription rules.
 
-O script Angular `npm test --prefix apps/web` existe, mas `angular.json` não possui target `test`. Portanto ele não constitui uma suíte Angular configurada. Os aliases `test:e2e` e `test:finance` da API apontam para a integração de multitenancy.
+The Angular script `npm test --prefix apps/web` exists, but `angular.json` has no `test` target. It therefore does not constitute a configured Angular test suite. The API's `test:e2e` and `test:finance` aliases point to the multitenancy integration suite.
 
-Uma validação deve registrar comando, código de saída, número de testes aprovados/falhos/bloqueados e limitações. Build aprovado não substitui testes de integração. Resultados de documentos antigos não comprovam que o checkout atual passou novamente. Relatórios produzidos pelo harness podem conter dados de fixtures e devem ser revisados antes de publicação.
+Validation should record commands, exit codes, passed/failed/blocked test counts, and limitations. A successful build does not replace integration tests. Results in older documents do not prove that the current checkout has passed again. Reports produced by the harness may contain fixture data and should be reviewed before publication.
 
-## Regras de negócio e segurança
+## Business rules and security
 
-- Dados empresariais são escopados pelo tenant autenticado e verificados no servidor. Ocultar um item do menu não é a barreira de autorização.
-- Sessões usam cookies HttpOnly e token CSRF; o cliente obtém o token em `/api/auth/csrf` antes de mutações. O backend também valida origens e revogação da sessão.
-- Valores monetários são representados em centavos inteiros. Despesas usam datas civis e competência mensal; o relatório distingue previsto, pago, pendente, vencido e cancelado.
-- Pagamentos, correções e cancelamentos financeiros preservam histórico. Conta paga não recebe edição comum; correção exige confirmação e justificativa.
-- Recorrências financeiras são geradas explicitamente por competência. Repetir a geração não deve duplicar a mesma ocorrência.
-- Registrar uma despesa ou custo não movimenta estoque por si só. Recebimentos, produção e outras integrações têm operações próprias.
-- Novas vendas comerciais usam baixa de estoque na finalização quando o módulo de estoque está contratado. Pedidos legados podem conservar a política anterior de reserva; não aplique uma única regra indiscriminadamente a ambos.
-- Produtos sob demanda podem permanecer disponíveis sem saldo pronto; produtos controlados por produção respeitam as regras de disponibilidade.
-- Schemas usam provisionamento explícito de coleções/índices. A API não deve ser iniciada como forma de migrar ou semear dados operacionais.
-- Publicar o código no GitHub não publica a aplicação, banco, domínio ou servidor.
+- Company data is scoped to the authenticated tenant and checked on the server. Hiding a menu item is not an authorization boundary.
+- Sessions use HttpOnly cookies and a CSRF token; the client obtains the token from `/api/auth/csrf` before mutations. The backend also checks origins and session revocation.
+- Monetary values are represented as integer cents. Expenses use calendar dates and monthly accounting periods; reports distinguish expected, paid, pending, overdue, and canceled amounts.
+- Financial payments, corrections, and cancellations preserve history. Paid entries cannot be edited through the normal edit flow; corrections require confirmation and a reason.
+- Recurring financial entries are generated explicitly for an accounting period. Repeating generation must not duplicate the same occurrence.
+- Recording an expense or cost does not move stock on its own. Receipts, production, and other integrations have their own operations.
+- New sales under the commercial model deduct stock on finalization when the inventory module is included in the subscription. Legacy orders may retain the previous reservation policy; do not apply a single rule indiscriminately to both.
+- Made-to-order products may remain available without finished stock; production-controlled products follow availability rules.
+- Schemas require explicit collection/index provisioning. Starting the API must not be used as a way to migrate or seed operational data.
+- Publishing the code on GitHub does not deploy the application, database, domain, or server.
 
-## Limitações
+## Limitations
 
-O sistema está em evolução. Em particular:
+The system is evolving. In particular:
 
-- Não emite NFC-e/NF-e nem transmite ECD/ECF. Consultas, exportações e demonstrativos auxiliares não equivalem a integrações fiscais oficiais.
-- Cobranças de assinaturas e contratos possuem operações manuais; não há promessa de gateway de pagamento ou renovação financeira automática.
-- Fidelidade não pontua automaticamente todas as vendas. Projetos não oferece Gantt, cronômetro ou faturamento de horas.
-- Logística não fornece rastreamento público, otimização de rotas, frete externo ou operação offline.
-- BI tem escopo de fontes/CSV e indicadores definidos, sem construtor livre de fórmulas ou consolidação automática de filiais.
-- Documentos não integra antivírus externo, OCR ou assinatura eletrônica.
-- A configuração de e-mail depende de credenciais externas; aceite pelo provedor não comprova entrega.
-- O limitador de requisições é por processo; múltiplas instâncias exigem solução compartilhada.
-- O Compose atual não entrega sozinho uma instalação completa. Os scripts de provisionamento operacional precisam de revisão própria antes de qualquer implantação fora do banco autorizado de teste.
+- It does not issue NFC-e/NF-e or submit ECD/ECF. Queries, exports, and supplementary statements are not equivalent to official tax integrations.
+- Subscription and contract billing include manual operations; there is no promise of a payment gateway or automatic payment renewal.
+- Loyalty does not automatically award points for every sale. Projects does not offer Gantt charts, a timer, or hourly billing.
+- Logistics does not provide public tracking, route optimization, external shipping integration, or offline operation.
+- BI is scoped to data sources/CSV and defined metrics, without a general-purpose formula builder or automatic branch consolidation.
+- Documents does not integrate external antivirus, OCR, or electronic signatures.
+- Email configuration depends on external credentials; acceptance by the provider does not prove delivery.
+- The rate limiter operates per process; multiple instances require a shared solution.
+- The current Compose file does not provide a complete installation on its own. Operational provisioning scripts require their own review before any deployment outside the authorized test database.
 
-## Documentação e contribuição
+## Documentation and contributing
 
-| Documento | Assunto |
+| Document | Subject |
 | --- | --- |
-| [Usuários e implantação](docs/users-tenancy-deployment.md) | Chaves, transações, primeiro administrador e migração. |
-| [Cargos personalizados](docs/usuarios-cargos-personalizados.md) | Modelo de permissões. |
-| [Assinatura obrigatória](docs/assinatura-acesso-obrigatorio.md) | Contratação e bloqueio de acesso sem assinatura. |
-| [Comercial SaaS](docs/saas-planos-assinaturas-spec.md) | Planos, preços, contratos comerciais e quotas. |
-| [Manual da vitrine](docs/vitrine-manual.md) | Catálogo público, categorias e disponibilidade. |
-| [Manual financeiro](docs/financeiro-manual.md) | Uso de despesas, pagamentos e recorrências. |
-| [Contrato financeiro](docs/financeiro-contrato.md) | Regras e endpoints; partes históricas foram complementadas por evoluções posteriores. |
-| [Gestão operacional](docs/gestao-operacional-manual.md) | Insumos, fichas e fluxo de produção. |
-| [Ampliação do portfólio](docs/portfolio-ampliacao-2026-09-18.md) | Escopo, integrações e limites dos novos módulos. |
-| [Segurança do backend](docs/security-backend.md) | Controles HTTP, sessão e autorização. |
-| [Segurança MongoDB](docs/security-mongodb.md) | Configuração e persistência. |
-| [Instruções do projeto](AGENTS.md) | Responsabilidades, preservação de dados e regras de QA. |
-| [Verificação da publicação](docs/publicacao-verificacao.md) | Comandos, resultados e limitações registrados para esta publicação. |
+| [Users and deployment](docs/users-tenancy-deployment.md) | Keys, transactions, the first administrator, and migration. |
+| [Custom roles](docs/usuarios-cargos-personalizados.md) | Permission model. |
+| [Mandatory subscriptions](docs/assinatura-acesso-obrigatorio.md) | Subscribing and blocking access without a subscription. |
+| [Commercial SaaS](docs/saas-planos-assinaturas-spec.md) | Plans, pricing, commercial contracts, and quotas. |
+| [Storefront manual](docs/vitrine-manual.md) | Public catalog, categories, and availability. |
+| [Financial manual](docs/financeiro-manual.md) | Using expenses, payments, and recurring entries. |
+| [Financial contract](docs/financeiro-contrato.md) | Rules and endpoints; historical sections have been supplemented by later changes. |
+| [Operations management](docs/gestao-operacional-manual.md) | Ingredients, recipes, and production workflow. |
+| [Portfolio expansion](docs/portfolio-ampliacao-2026-09-18.md) | Scope, integrations, and limitations of newer modules. |
+| [Backend security](docs/security-backend.md) | HTTP controls, sessions, and authorization. |
+| [MongoDB security](docs/security-mongodb.md) | Configuration and persistence. |
+| [Project instructions](AGENTS.md) | Responsibilities, data preservation, and QA rules. |
+| [Publication verification](docs/publicacao-verificacao.md) | Commands, results, and limitations recorded for this publication. |
 
-Para contribuir, descreva o problema, mantenha o escopo da alteração claro e execute as verificações pertinentes no banco autorizado. Não inclua `.env`, credenciais, dumps, anexos privados, dados pessoais ou relatórios não revisados. Mudanças de schema devem preservar registros e tratar índices/provisionamento explicitamente.
+To contribute, describe the problem, keep the scope of the change clear, and run the relevant checks against the authorized database. Do not include `.env`, credentials, dumps, private attachments, personal data, or unreviewed reports. Schema changes must preserve records and address indexes/provisioning explicitly.
 
-As responsabilidades de agentes estão em `.codex/agents/`. São definições de trabalho, não comprovação de processos ativos ou validações executadas.
+Agent responsibilities are defined in `.codex/agents/`. These are work definitions, not evidence of active processes or completed validations.
 
-**Licença:** não há licença de código aberto declarada para o projeto; o pacote da API está marcado como `UNLICENSED`. A visibilidade pública do repositório não substitui a concessão de uma licença.
+**License:** no open-source license has been declared for the project; the API package is marked `UNLICENSED`. Making the repository public does not replace granting a license.
