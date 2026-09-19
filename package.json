@@ -1,0 +1,20 @@
+{
+  "name": "salgados-mvp",
+  "private": true,
+  "scripts": {
+    "install:all": "npm install --prefix apps/api && npm install --prefix apps/web",
+    "dev": "concurrently -n API,WEB -c cyan,magenta \"npm run start:dev --prefix apps/api\" \"npm start --prefix apps/web -- --host 0.0.0.0\"",
+    "build": "npm run build --prefix apps/web && node scripts/copy-web.mjs && npm run build --prefix apps/api",
+    "start:prod": "npm run start:prod --prefix apps/api",
+    "test": "npm test --prefix apps/api",
+    "test:tenancy": "node scripts/tenancy-integration.mjs",
+    "test:catalog": "node scripts/catalog-rbac-integration.mjs",
+    "test:commerce": "node scripts/commerce-integration.mjs",
+    "commerce:diagnose": "node scripts/commerce-storage.mjs --diagnose",
+    "test:migration": "node scripts/tenancy-migration-check.mjs"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "playwright-core": "^1.63.0"
+  }
+}

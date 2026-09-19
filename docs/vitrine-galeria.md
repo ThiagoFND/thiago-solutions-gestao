@@ -1,0 +1,9 @@
+# Galeria compacta de produtos — 18/09/2026
+
+Pedido: substituir fotos adicionais empilhadas por seleção simples, semelhante a miniaturas ou navegação lateral. Somente agente principal, sequencial; handoff e correções anteriores considerados. Nenhuma alteração de banco ou cadastro necessária.
+
+Contrato: componente de galeria por produto, uma imagem principal com proporção estável e miniaturas horizontais roláveis. Setas, teclado e gesto horizontal em celular selecionam imagens; sem rotação automática. Imagem principal mais até seis adicionais, sem duplicatas; sem foto usa inicial, falha não bloqueia a navegação. Descrição completa continua em Mais informações, sem galeria vertical. Preservar URLs da API, CORS e prévia autenticada. Testar troca por miniatura, setas, teclado/gesto e layout pequeno; build atual e regressão somente na URI de QA autorizada.
+
+Implementado ProductGallery TS/HTML/SCSS e integrado em PublicCatalog; removidas fotos empilhadas e estilos antigos. Build Angular/NestJS aprovado (`vitrine-qa/gallery-build.log`); CSS do catálogo voltou abaixo do orçamento de aviso. Permanecem avisos anteriores da apresentação inicial e QR CommonJS. Regressão atual: 39 aprovados/zero falhas, run `1789731048296-328730b396`, `vitrine-qa/gallery-integration-3.log`, com miniaturas/setas/teclado/toque sintético e responsividade. Duas rodadas anteriores falharam por sincronização de renderização e TouchInit inválido no teste; corrigidas no teste, logs preservados. Preservação/limpeza própria nos artefatos da execução.
+
+Tentativa somente leitura na vitrine real `thiagoteste`: consulta pública retornou 404; não foi reativada nem alterada para permitir QA. Não declarar essa conferência aprovada (`vitrine-qa/gallery-local.log`). Teste com dados próprios confirmou a galeria; não houve leitura por aparelho físico. Scripts de navegador atualizados para o novo layout. Nenhuma mudança de backend/persistência. Demais pendências anteriores permanecem.

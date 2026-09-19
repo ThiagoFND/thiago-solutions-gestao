@@ -1,0 +1,13 @@
+<section class="business">
+  <header><div><h1>Auditoria</h1><p>Eventos registrados para sua empresa, do mais recente ao mais antigo.</p></div><button (click)="load()" [disabled]="busy()">Atualizar auditoria</button></header>
+  @if(error()){<p role="alert" class="notice">{{error()}}</p>}
+  @if(busy()){<p role="status">Carregando eventos...</p>}
+  <p>Horários apresentados no fuso deste dispositivo. Os registros são somente para consulta.</p>
+  <div class="table-scroll" tabindex="0" aria-label="Eventos de auditoria">
+    <table><thead><tr><th>Data e hora</th><th>Ação</th><th>Resultado</th><th>Responsável</th><th>Recurso</th></tr></thead><tbody>
+      @for(event of rows();track event._id){<tr><td>{{event.occurredAt|date:'dd/MM/yyyy HH:mm:ss'}}</td><td>{{event.action}}</td><td>{{outcomes[event.outcome]}}</td><td>{{event.actorRole || 'Sistema'}}@if(event.actorId){<small>{{event.actorId}}</small>}</td><td>{{event.resourceType || '—'}}@if(event.resourceId){<small>{{event.resourceId}}</small>}</td></tr>}
+      @empty{@if(!busy()&&!error()){<tr><td colspan="5">Nenhum evento registrado.</td></tr>}}
+    </tbody></table>
+  </div>
+  <nav class="actions" aria-label="Paginação da auditoria"><button (click)="load(page-1)" [disabled]="busy()||page<=1">Anterior</button><span>Página {{page}} de {{totalPages || 1}} · {{total}} eventos</span><button (click)="load(page+1)" [disabled]="busy()||page>=totalPages">Próxima</button></nav>
+</section>

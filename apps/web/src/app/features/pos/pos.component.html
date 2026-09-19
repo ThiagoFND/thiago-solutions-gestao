@@ -1,0 +1,50 @@
+<div class="pos-page">
+  <section class="catalog">
+    <header><div><p class="eyebrow">PONTO DE VENDA</p><h1>Nova venda</h1></div><button class="outline" (click)="newOrder()" [appPermission]="editingId() ? 'vendas.editar' : 'vendas.criar'">+ Novo pedido</button></header>
+    <label>Buscar produto<input type="search" [ngModel]="search()" (ngModelChange)="search.set($event)" maxlength="120" placeholder="Nome ou categoria"></label>
+    <div class="categories">@for (item of categories(); track item) { <button [class.active]="category() === item" (click)="category.set(item)">{{ item }}</button> }</div>
+    @for(group of groups;track group.key){<h2>{{group.label}}</h2><div class="products">@for (product of grouped(group.key); track product._id) {
+      <button class="product" [disabled]="!isAvailable(product)" (click)="add(product)" [appPermission]="editingId() ? 'vendas.editar' : 'vendas.criar'">
+        <span class="product-name">{{ product.name }}</span><span class="price">{{ money(product.priceCents) }}</span>
+        <small [class.unavailable]="!isAvailable(product)">{{ stockLabel(product) }}</small>
+        @if (qty(product._id)) { <b class="quantity">{{ qty(product._id) }}</b> }
+      </button>
+    } @empty {<p class="empty">Nenhum produto neste grupo.</p>}</div>}
+    <section class="open-orders"><div class="section-title"><h2>Pedidos abertos</h2><span>{{ openOrders().length }}</span></div>
+      <div class="order-list">@for (order of openOrders(); track order._id) {
+        <article [class.selected]="editingId() === order._id" (click)="edit(order)">
+          <div><strong>#{{ order.number }}</strong><small>{{ order.type === 'DINE_IN' ? 'No local' : 'Para viagem' }} · {{ order.createdAt | date:'HH:mm' }}</small></div>
+          <div><b>{{ money(order.totalCents) }}</b><button title="Cancelar" (click)="$event.stopPropagation(); cancelOrder(order)" appPermission="vendas.cancelar">×</button></div>
+        </article>
+      } @empty { <p class="empty">Nenhum pedido aberto.</p> }</div>
+    </section>
+  </section>
+
+  <aside class="cart">
+    <div class="cart-title"><div><small>{{ editingId() ? 'EDITANDO PEDIDO' : 'NOVO PEDIDO' }}</small><h2>{{ editingId() ? 'Pedido aberto' : 'Carrinho' }}</h2></div><span>{{ itemCount() }} itens</span></div>
+    <div class="type"><button [class.active]="orderType === 'TAKEAWAY'" (click)="orderType='TAKEAWAY'">Para viagem</button><button [class.active]="orderType === 'DINE_IN'" (click)="orderType='DINE_IN'">No local</button></div>
+    <input aria-label="Mesa ou identifica??o" maxlength="80" class="identifier" [(ngModel)]="identifier" placeholder="Mesa ou identificação (opcional)">
+    <div class="lines">@for (line of draftLines(); track line.product._id) {
+      <div class="line"><div><strong>{{ line.product.name }}</strong><small>{{ money(line.product.priceCents) }} cada</small></div><div class="stepper"><button (click)="remove(line.product)" appPermission="vendas.editar">−</button><b>{{ line.quantity }}</b><button [disabled]="!canAdd(line.product)" (click)="add(line.product)" appPermission="vendas.editar">+</button></div><b>{{ money(line.product.priceCents * line.quantity) }}</b></div>
+    } @empty { <div class="empty-cart"><span>Seu pedido está vazio</span><small>Selecione os produtos ao lado.</small></div> }</div>
+    <textarea aria-label="Observa??o do pedido" maxlength="300" [(ngModel)]="notes" placeholder="Observação do pedido (opcional)"></textarea>
+    @if (message()) { <p class="error" role="alert">{{ message() }}</p> }
+    <div class="total"><span>Total</span><strong>{{ money(totalCents()) }}</strong></div>
+    <button class="secondary" [disabled]="!draft.size || saving()" (click)="save()" [appPermission]="editingId() ? 'vendas.editar' : 'vendas.criar'">{{ editingId() ? 'Salvar alterações' : 'Salvar e deixar aberto' }}</button>
+    @if (editingId()) { <button class="primary" [disabled]="saving()" (click)="openCheckout()" appPermission="vendas.finalizar">Finalizar pedido</button> }
+  </aside>
+</div>
+
+@if (checkout()) {
+  <div class="modal-backdrop"><section class="modal"><div class="modal-head"><div><small>RECEBIMENTO</small><h2>Finalizar pedido</h2></div><button (click)="checkout.set(false)">×</button></div>
+    <div class="due"><span>Total a receber</span><strong>{{ money(totalCents()) }}</strong></div>
+    @for (payment of payments; track $index; let i = $index) {
+      <div class="payment-row"><select [(ngModel)]="payment.method"><option value="CASH">Dinheiro</option><option value="PIX">Pix</option><option value="DEBIT">Débito</option><option value="CREDIT">Crédito</option></select><input type="number" min="0.01" step="0.01" [(ngModel)]="payment.amount" placeholder="Valor"><button (click)="removePayment(i)">×</button></div>
+      @if (payment.method === 'CASH') { <label class="received">Valor recebido em dinheiro<input type="number" min="0.01" step="0.01" [(ngModel)]="payment.received"></label> }
+    }
+    <button class="link" (click)="addPayment()">+ Dividir pagamento</button>
+    <div class="sum" [class.wrong]="paymentSumCents() !== totalCents()"><span>Informado</span><b>{{ money(paymentSumCents()) }}</b></div>
+    @if (message()) { <p class="error" role="alert">{{ message() }}</p> }
+    <button class="primary" [disabled]="saving() || paymentSumCents() !== totalCents()" (click)="finalize()" appPermission="vendas.finalizar">Confirmar pagamento</button>
+  </section></div>
+}

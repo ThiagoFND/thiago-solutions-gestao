@@ -1,0 +1,41 @@
+<div class="shell">
+  <aside>
+    <a class="logo" [routerLink]="auth.home()"><span>TS</span><div><strong>Thiago Solutions</strong><small>Digitais · Gestão</small></div></a>
+    <nav aria-label="Menu principal">
+      <a routerLink="/meu-perfil" routerLinkActive="active">Meu perfil</a>
+      @if (auth.active() && !auth.hasRole('PLATFORM_ADMIN')) {
+      @if(auth.hasRole('OWNER','ADMIN')){<a routerLink="/assinatura" routerLinkActive="active">Plano e assinatura</a>}
+      @if(auth.can('relatorios.visualizar','financeiro.visualizar')){<a routerLink='/dashboard' routerLinkActive='active'>Visão geral</a>}
+      @if(auth.can('estoque.visualizar')){<a routerLink='/estoque' routerLinkActive='active'>Estoque</a>}
+      @if(auth.can('estoque.visualizar','producao.visualizar')){<a routerLink='/insumos' routerLinkActive='active'>Insumos e fichas</a>}
+      @if(auth.can('vendas.visualizar')){<a routerLink='/vendas' routerLinkActive='active'>Vendas</a>}
+      @if(auth.can('crm.visualizar')){<a routerLink='/crm' routerLinkActive='active'>Relacionamento com clientes</a>}
+      @if(auth.can('servicos.visualizar')){<a routerLink='/servicos' routerLinkActive='active'>Agenda e ordens de serviço</a>}
+      @if(auth.can('contratos.visualizar')){<a routerLink='/contratos' routerLinkActive='active'>Contratos e recorrências</a>}
+      @if(auth.can('fidelidade.visualizar')){<a routerLink='/fidelidade' routerLinkActive='active'>Fidelidade</a>}
+      @if(auth.can('projetos.visualizar')){<a routerLink='/projetos' routerLinkActive='active'>Projetos e tarefas</a>}
+      @if(auth.can('compras.visualizar')){<a routerLink='/compras' routerLinkActive='active'>Compras</a>}
+      @if(auth.can('logistica.visualizar')){<a routerLink='/logistica' routerLinkActive='active'>Logística e entregas</a>}
+      @if(auth.can('bi.visualizar')){<a routerLink='/bi' routerLinkActive='active'>Inteligência gerencial</a>}
+      @if(auth.can('documentos.visualizar')){<a routerLink='/documentos' routerLinkActive='active'>Documentos</a>}
+      @if(auth.can('filiais.visualizar')){<a routerLink='/filiais' routerLinkActive='active'>Filiais</a>}
+      @if(auth.can('producao.visualizar')){<a routerLink='/cozinha' routerLinkActive='active'>Produção</a>}
+      @if(auth.can('financeiro.visualizar')){<a routerLink='/despesas' routerLinkActive='active'>Despesas</a>}
+      @if(auth.can('tesouraria.visualizar')){<a routerLink='/financeiro' routerLinkActive='active'>Financeiro</a>}
+      @if(auth.can('contabil.visualizar')){<a routerLink='/contabil' routerLinkActive='active'>Contábil</a>}
+      @if(auth.can('qualidade.visualizar')){<a routerLink='/qualidade' routerLinkActive='active'>Qualidade e devoluções</a>}
+      @if(auth.can('cadastros.visualizar')){<a routerLink='/cadastros' routerLinkActive='active'>Clientes e fornecedores</a>}
+      @if(auth.can('produtos.visualizar','categorias.visualizar')){<a routerLink='/produtos' routerLinkActive='active'>Produtos</a>}
+      @if(auth.can('categorias.visualizar')){<a routerLink='/categorias' routerLinkActive='active'>Categorias</a>}
+      @if(auth.can('landing_page.visualizar')){<a routerLink='/vitrine' routerLinkActive='active'>Vitrine pública</a>}
+      @if(auth.can('auditoria.visualizar')){<a routerLink='/auditoria' routerLinkActive='active'>Auditoria</a>}
+      @if(auth.can('cargos.visualizar')){<a routerLink='/cargos' routerLinkActive='active'>Cargos e permissões</a>}
+      @if(auth.can('usuarios.visualizar')){<a routerLink='/usuarios' routerLinkActive='active'>Usuários @if(tenancy.pending()>0){<span class='pending-badge'>{{tenancy.pending()}}</span>}</a>}
+      } @else {
+        <a [routerLink]="auth.home()">{{auth.hasRole('PLATFORM_ADMIN') && auth.active() ? 'Empresas' : 'Acompanhar aprovação'}}</a>
+      }
+    </nav>
+    <div class="account"><strong>{{ auth.user()?.name }}</strong><small>{{ auth.user()?.customRoleName || auth.user()?.role }}</small><button (click)="logout()">Sair</button></div>
+  </aside>
+  <main>@if (auth.notice()) { <p role="alert" class="security-notice">{{ auth.notice() }} <button (click)="auth.notice.set('')" aria-label="Fechar aviso">Fechar</button></p> }<router-outlet /></main>
+</div>

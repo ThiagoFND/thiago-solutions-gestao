@@ -1,0 +1,33 @@
+# Cargos da empresa na seleção de usuários — 18/09/2026
+
+## Alteração de requisito: somente cargos criados pela empresa
+
+Pedido posterior remove a oferta de perfis antigos. Novo contrato: seletores somente com cargos customizados; sem cargos disponíveis, orientar criação e impedir aprovação/atribuição. Endpoints recusam `role`, exigindo customRoleId, inclusive requisições manipuladas. Novos vínculos usam marcador técnico MEMBER, sem permissões próprias; todas as capacidades vêm do cargo cadastrado. Usuários anteriores mantêm seus vínculos e históricos até reatribuição explícita, que passa a MEMBER. Não apagar dados: não existe conflito contábil que exija excluir usuários, vendas ou financeiro. OWNER e PLATFORM_ADMIN continuam proteções estruturais. Os parágrafos posteriores sobre grupo de compatibilidade descrevem a entrega anterior, substituída por este contrato.
+
+Implementado: removido o grupo de perfis anteriores do seletor, orientação para criar cargo quando vazio, seleção limitada aos IDs carregados, DTO aceita somente customRoleId, marcador MEMBER sem permissões implícitas na aprovação e nas duas rotas de atribuição. Vínculos existentes não foram migrados ou excluídos. Backend mantém enum antigo apenas para ler/compatibilizar registros anteriores, não como opção de atribuição HTTP. OWNER/ADMIN/PLATFORM_ADMIN continuam protegidos.
+
+Validação desta alteração: build aprovado (`vitrine-qa/custom-only-build.log`); **217 unitários/15 arquivos aprovados**, incluindo rejeição dos perfis fixos e MEMBER sem poderes (`custom-only-unit.log`); **41 cenários HTTP/Chrome aprovados, zero falhas**, run `1789731965906-e30596659c`, log `custom-only-integration.log`. Teste verifica ausência de Caixa/Cozinha/Contador nas options, recusa HTTP desses valores, permissões efetivas por cargo e revogação. Scan de 32 bundles sem achados heurísticos. URI exata de QA conferida; preservação e limpeza de fixtures nos manifestos da execução. Não houve operação no banco operacional. Alterações adicionais: enums/modelos, RolesService, DTO/controller/service de usuários, frontend Usuários e testes.
+
+Estado: a tela Usuários usa três options fixos; cargos personalizados só podem ser atribuídos em Cargos e permissões. Aprovação de pendente aceita apenas enum legado. Leitura: handoff atual, UsersComponent/template, TenancyApi, UsersController/Service, tenancy DTO, RolesService e regras de segurança já documentadas. Somente principal; escrita de QA exclusivamente na URI autorizada, nunca no cadastro do usuário.
+
+Contrato: seletor mostra cargos ativos/não arquivados do tenant, limitados às permissões do ator, em grupo separado dos perfis legados de compatibilidade. OWNER/ADMIN/PLATFORM_ADMIN e o próprio usuário não recebem seletor. Listagem exige cargos.visualizar e atribuição cargos.atribuir; aprovação exige usuarios.aprovar, alteração exige usuarios.alterar_cargo. Backend aceita exatamente um de role ou customRoleId. Aprovação com cargo personalizado deve ser atômica, sem conceder permissões provisórias de um perfil legado. Referência do tenant, estado do cargo e subconjunto revalidados em transação sob trava de associação; sessões revogadas e históricos/auditoria atualizados. Sem migração.
+
+Testes: DTO inválido/duplo, outro tenant, cargo inativo/arquivado, escalada, self e proprietário; aprovação direta com cargo e alteração de usuário existente na tela, permissões efetivas e revogação. Preservar compatibilidade dos antigos endpoints e testes. Não declarar como resolvidas paginação/SSR/estorno/desconto/infraestrutura da lista anterior.
+
+## Implementação e validação
+
+Alterados: `tenants/tenancy.dto.ts`, `users/users.controller.ts`, `users/users.service.ts`, frontend `core/tenancy-api.service.ts`, `features/users/users.component.ts/html` e `scripts/catalog-rbac-integration.mjs`. Seletor carrega páginas de cargos, filtra ativos/não arquivados e subconjunto do ator, mostra **Cargos da empresa** primeiro e mantém **Perfis anteriores (compatibilidade)** separados. Usuário protegido/próprio não recebe seletor. Sem cargos.visualizar, a tela explica a permissão necessária para consultar cargos; não amplia privilégios automaticamente.
+
+Contratos existentes `POST /api/users/:id/approve` e `PATCH /api/users/:id/role` aceitam `{customRoleId}` ou `{role}`; ambos juntos são recusados. Política dos endpoints permanece igual, inventário continua em 99 handlers. Aprovação customizada grava papel estrutural CASHIER junto de customRoleId na mesma transação; permissões efetivas vêm exclusivamente do cargo customizado. Não existe etapa intermediária com permissões de Caixa. Edição preserva papel estrutural; retorno a perfil legado remove vínculo customizado e registra remoção no histórico.
+
+Comandos sequenciais:
+
+- `npm run build`: aprovado Angular/NestJS, `vitrine-qa/member-roles-build.log`. Avisos anteriores de apresentação inicial/QR continuam; aviso de tamanho do CSS do catálogo foi eliminado pela separação da galeria.
+- `npm test --prefix apps/api -- --no-file-parallelism`: **211 testes, 15 arquivos, zero falhas**, `vitrine-qa/member-roles-unit.log`.
+- `CATALOG_BROWSER=true; node scripts/catalog-rbac-integration.mjs`: primeira rodada `1789731389244-5f814545f2` com 40 aprovados/1 falha de seletor ambíguo (nome aparece no texto e na option). Corrigido seletor do teste.
+- Rodada final `1789731440207-4fb4c87cef`: **41 cenários aprovados, zero falhas**, `vitrine-qa/member-roles-final.log`. Testa aprovação/alteração pelo navegador, impedimento de cargo externo/inativo, entrada inválida/dupla/PLATFORM_ADMIN, proprietário, subconjunto, permissões efetivas, sessão revogada, histórico e falha injetada no histórico com rollback de aprovação. Inclui regressão da galeria e salvamento da vitrine. Artefatos de limpeza/preservação no diretório da execução; API e Chrome próprios encerrados.
+- Scan atual: 32 bundles sem achados heurísticos. Nenhum teste ou escrita no banco operacional; toda aplicação de QA usou a URI literal autorizada.
+
+Uso: criar/ativar o cargo em Cargos e permissões; abrir Usuários, selecionar **Cargo de acesso → Cargos da empresa**, e Aprovar ou Alterar perfil. Quem administra precisa cargos.visualizar/cargos.atribuir e usuarios.aprovar ou usuarios.alterar_cargo conforme ação; não pode conceder capacidades que não possui. Atualizar a página para carregar novas opções.
+
+Pendências da lista ampla continuam abertas e rastreadas nos documentos anteriores; esta entrega corrige especificamente seleção/atribuição em Usuários e encerra a implementação da galeria iniciada no pedido anterior. Nenhuma implantação operacional realizada.

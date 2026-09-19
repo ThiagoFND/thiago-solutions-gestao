@@ -1,0 +1,20 @@
+<main class="login-page">
+  <section class="login-intro"><a routerLink="/" class="intro-brand"><span>TS</span><div>Thiago Solutions<small>Digitais</small></div></a><div class="intro-copy"><p class="eyebrow">SUA EMPRESA, CONECTADA</p><h2>Uma visão mais clara.<br>Uma rotina mais simples.</h2><p>Vendas, produção e financeiro no mesmo lugar, com uma área para cada pessoa da equipe.</p><ul><li>Organize a operação da sua empresa</li><li>Acompanhe contas e recebimentos</li><li>Gerencie acessos por perfil</li></ul></div><a routerLink="/" class="back-home">← Conheça a plataforma</a></section>
+  <section class="login-card">
+    <a routerLink="/" class="mobile-brand">Thiago Solutions Digitais</a>
+    <div class="brand" aria-hidden="true">TS</div>
+    <p class="eyebrow">THIAGO SOLUTIONS DIGITAIS</p>
+    <h1>{{ platform ? 'Administração da plataforma' : 'Bem-vindo de volta' }}</h1>
+    <p class="muted">Entre para acessar sua área de trabalho.</p>
+    @if (auth.notice()) { <p role="alert">{{ auth.notice() }}</p> }
+    <form #form="ngForm" (ngSubmit)="form.valid && submit()">
+      @if (!platform) { <label>CNPJ<input name="cnpj" appDocument="cnpj" #cnpjField="ngModel" [(ngModel)]="cnpj" required maxlength="18" autocomplete="organization"></label>@if(cnpjField.touched && cnpjField.invalid){<p role="alert">Informe um CNPJ válido com 14 dígitos.</p>} }
+      <label>E-mail<input type="email" name="email" [(ngModel)]="email" required autocomplete="username"></label>
+      <label>Senha<input type="password" name="password" [(ngModel)]="password" required autocomplete="current-password"></label>
+      @if (error()) { <div class="error">{{ error() }}</div> }
+      <button class="primary" type="submit" [disabled]="loading() || form.invalid">{{ loading() ? 'Entrando...' : 'Entrar' }}</button>
+    </form>
+    <p><a routerLink="/cadastrar-empresa">Cadastrar empresa</a> · <a routerLink="/solicitar-acesso">Solicitar acesso</a></p>
+    <a [routerLink]="platform ? '/login' : '/plataforma/login'">{{ platform ? 'Entrar na empresa' : 'Acesso da plataforma' }}</a>
+  </section>
+</main>

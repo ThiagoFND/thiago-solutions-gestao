@@ -1,0 +1,16 @@
+import { Schema } from 'mongoose';
+const options = { timestamps: true, autoCreate: false, autoIndex: false, strict: 'throw' as const };
+const oid = { type: Schema.Types.ObjectId, required: true };
+const text = (max: number) => ({ type: String, maxlength: max, trim: true });
+const base = { tenantId: { ...oid, immutable: true }, actorId: oid, requestId: { ...text(36), required: true }, inputHash: { ...text(64), required: true }, version: { type: Number, default: 0 } };
+const stage = new Schema({ code: { ...text(30), required: true }, name: { ...text(80), required: true }, probability: { type: Number, min: 0, max: 100, required: true } }, { _id: false, strict: 'throw' });
+const pipeline = new Schema({ ...base, name: { ...text(100), required: true }, stages: [stage] }, { ...options, collection: 'crm_pipelines_v2' });
+const opportunity = new Schema({ ...base, title: { ...text(160), required: true }, partyId: oid, partyName: text(160), pipelineId: oid, pipelineName: text(100), stages: [stage], stage: text(30), assignedId: oid, assignedName: text(120), amountCents: { type: Number, min: 0, max: 1e12 }, expectedDate: String, source: text(100), notes: text(2000), status: { type: String, enum: ['OPEN', 'WON', 'LOST'], default: 'OPEN' }, closedAt: Date, reason: text(1000) }, { ...options, collection: 'crm_opportunities_v2' });
+const activity = new Schema({ ...base, opportunityId: oid, kind: { type: String, enum: ['CALL', 'MEETING', 'EMAIL', 'TASK', 'NOTE', 'STAGE', 'RESULT'] }, description: text(1000), dueDate: String, done: { type: Boolean, default: false }, completedAt: Date }, { ...options, collection: 'crm_activities_v2' });
+const proposal = new Schema({ ...base, opportunityId: oid, partyId: oid, partyName: text(160), revision: { type: Number, required: true }, validUntil: String, conditions: text(4000), lines: [new Schema({ productId: Schema.Types.ObjectId, description: text(200), quantity: Number, unitCents: Number }, { _id: false, strict: 'throw' })], subtotalCents: Number, discountCents: Number, totalCents: Number, status: { type: String, enum: ['DRAFT', 'APPROVED'], default: 'DRAFT' }, approvedById: Schema.Types.ObjectId, approvedAt: Date, approvalReason: text(1000) }, { ...options, collection: 'crm_proposals_v2' });
+for (const schema of [pipeline, opportunity, activity, proposal]) schema.index({ tenantId: 1, requestId: 1 }, { unique: true });
+opportunity.index({ tenantId: 1, assignedId: 1, status: 1, expectedDate: 1, _id: 1 });
+opportunity.index({ tenantId: 1, pipelineId: 1, stage: 1 });
+activity.index({ tenantId: 1, opportunityId: 1, createdAt: -1 });
+proposal.index({ tenantId: 1, opportunityId: 1, revision: 1 }, { unique: true });
+export const CRM_MODELS = [{ name: 'CrmPipeline', schema: pipeline }, { name: 'CrmOpportunity', schema: opportunity }, { name: 'CrmActivity', schema: activity }, { name: 'CrmProposal', schema: proposal }];

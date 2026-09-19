@@ -1,0 +1,14 @@
+import { Schema } from 'mongoose';
+const options = { timestamps:true, autoCreate:false, autoIndex:false, strict:'throw' as const };
+const oid = { type:Schema.Types.ObjectId, required:true };
+const text = (maxlength:number) => ({ type:String, trim:true, maxlength });
+const money = { type:Number, required:true, min:1, max:1e12, validate:Number.isSafeInteger };
+const history = new Schema({ status:String, reason:text(1000), actorId:oid, at:Date }, { _id:false, strict:'throw' });
+const terms = new Schema({ revision:Number, effectiveMonth:String, terms:text(12000), amountCents:money, actorId:oid, reason:text(1000), at:Date }, { _id:false, strict:'throw' });
+const contract = new Schema({ tenantId:{...oid,immutable:true}, actorId:oid, requestId:{...text(36),required:true}, inputHash:{...text(64),required:true}, version:{type:Number,default:0}, partyId:oid, partyName:text(160), accountId:oid, number:{...text(60),required:true}, title:text(160), startsOn:String, endsOn:String, intervalMonths:Number, billingDay:Number, revisions:[terms], status:{type:String,enum:['DRAFT','APPROVED','ACTIVE','SUSPENDED','ENDED','CANCELED'],default:'DRAFT'}, history:[history] }, {...options,collection:'customer_contracts_v2'});
+contract.index({tenantId:1,requestId:1},{unique:true});contract.index({tenantId:1,number:1},{unique:true});contract.index({tenantId:1,status:1,endsOn:1,_id:1});
+const cycle = new Schema({tenantId:{...oid,immutable:true},actorId:oid,contractId:oid,competence:{...text(7),required:true},revision:Number,amountCents:money,dueDate:String,entryId:oid}, {...options,collection:'customer_contract_cycles_v2'});
+cycle.index({tenantId:1,contractId:1,competence:1},{unique:true});cycle.index({tenantId:1,entryId:1},{unique:true});
+const accountRequest = new Schema({tenantId:{...oid,immutable:true},actorId:oid,requestId:{...text(36),required:true},inputHash:text(64),accountId:oid}, {...options,collection:'contract_account_requests_v2'});
+accountRequest.index({tenantId:1,requestId:1},{unique:true});
+export const CONTRACT_MODELS = [{name:'CustomerContract',schema:contract},{name:'ContractCycle',schema:cycle},{name:'ContractAccountRequest',schema:accountRequest}];

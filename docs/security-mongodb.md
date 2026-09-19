@@ -1,0 +1,25 @@
+# Configura??o segura do MongoDB
+
+Esta etapa alterou arquivos; n?o conectou ao MongoDB, n?o criou usu?rios, n?o alterou ?ndices reais, n?o reiniciou servi?os e n?o executou provisionamento. Edi??o/vers?o do daemon instalado n?o verificada. A imagem declarada no Compose ? mongo:8.
+
+## Conex?o da aplica??o
+
+Backend deve integrar `buildMongoOptions(process.env)` de `apps/api/src/common/mongodb.config.ts`. `MONGODB_URI` obrigat?ria com banco expl?cito, sem fallback; admin/local/config proibidos. Ambiente test e TEST_MONGODB_URI exigem exatamente `mongodb://127.0.0.1:27017/salgados_financeiro_test`. `MONGODB_USER` e `MONGODB_PASSWORD` opcionais em par, obrigatoriedade de credenciais em produ??o (tamb?m aceita credenciais na URI). Preferir secret manager/vari?veis separadas. Nunca imprimir URI/erro original do driver em respostas ou logs.
+
+Produ??o exige TLS (`MONGODB_TLS=true`, URI tls=true ou SRV), valida??o de certificados/hostname e credenciais; CA privada via `MONGODB_TLS_CA_FILE`. Usu?rios chamados root/admin rejeitados como prote??o adicional: o nome n?o comprova privil?gio m?nimo; provisionamento deve inspecionar as roles efetivas. `autoIndex=false` e `autoCreate=false` evitam DDL autom?tica do Mongoose. Escritas podem criar cole??es implicitamente se usu?rio tiver permiss?o, portanto provisionar cole??es/?ndices antes e restringir privil?gios efetivos.
+
+## Provisionamento separado, n?o executado
+
+Administrador de infraestrutura deve criar usu?rio dedicado apenas no banco da aplica??o, com role personalizada por cole??o. Cole??es previstas: users, products, orders, counters, productions, stockmovements, categorias_financeiras, lancamentos_financeiros, recorrencias_financeiras, security_audit_events. Confirmar nomes via schemas/modelos antes de provisionar. Permitir find/insert/update apenas onde necess?rio; security_audit_events somente insert/find. N?o conceder remove, dropCollection, dropDatabase, renameCollection, dbAdmin, userAdmin, root, acesso a outros bancos ou gest?o de ?ndices ? aplica??o. Gest?o de ?ndices fica com usu?rio de implanta??o separado. readWrite limitado a um banco ? alternativa mais ampla, pois inclui remo??o; n?o ? o perfil m?nimo recomendado.
+
+Criar ?ndices declarados de forma aditiva usando usu?rio de implanta??o, ap?s verificar conflitos/duplicatas; nunca syncIndexes, drop ou limpeza. Unicidade de email, n?mero de pedido e ocorr?ncia financeira depende dos ?ndices realmente provisionados. QA deve criar ?ndices explicitamente apenas no banco de teste, sem excluir/reinicializar dados. Nenhum novo ?ndice ?nico foi adicionado nesta etapa. Novos ?ndices de consulta: orders por openedById/status/createdAt/_id e createdAt/_id; productions por createdAt/_id; auditoria por tempo/ator/a??o. Sem TTL.
+
+Compose agora pede --auth e publica somente 127.0.0.1:27017; volume existente preservado. N?o executar restart/up antes de provisionar autentica??o: volume j? existente n?o recebe usu?rios automaticamente. Para ambiente vazio usar o procedimento oficial localhost exception em sess?o administrativa local; n?o embutir root/senha no Compose. --bind_ip_all dentro do container permite rede interna Docker: isolar essa rede e n?o conectar containers n?o confi?veis. Produ??o exige firewall/rede privada e TLS adicional; o Compose ? local e n?o configura TLS nem HTTPS.
+
+## Dados, criptografia e escopo
+
+Senha ? hash bcrypt custo >=12 (ou representa??o Argon2id; par?metros Argon2 s?o responsabilidade do hasher); nunca texto puro. Hash e sessionVersion select:false; login e valida??o JWT devem selecionar explicitamente apenas o necess?rio e usar proje??o p?blica separada. sessionVersion ausente em registros antigos deve ser interpretado como 0, sem migra??o em massa; logout/altera??o de role/senha/desativa??o incrementam atomicamente.
+
+Sem campos PAN/CVV ou dados completos de cart?o. Pre?os, custos, datas e IDs permanecem consult?veis/indexados; n?o criptografar indiscriminadamente. TLS cobre tr?nsito; criptografia de volume/disco/backups e gest?o externa de chaves s?o recomendadas. Criptografia nativa em repouso depende da edi??o Enterprise/servi?o Atlas, n?o presumida na imagem Community. CSFLE exige avalia??o de driver/edi??o/key vault/KMS e do impacto em ?ndices/consultas; nenhum campo atual justifica adot?-la sem esse projeto. N?o implementada nem comprovada criptografia do daemon.
+
+Mongo n?o fornece RLS: guards globais, filtros por autoria, valida??o de refer?ncias e proje??es de servi?o formam o isolamento. Strict throw e validadores Mongoose s?o defesa adicional, n?o valida??o server-side nem seguran?a para conex?es diretas. Updates precisam runValidators:true; $inc e invariantes entre documentos exigem limites/filtros/transa??es no servi?o. optimisticConcurrency em User e Order protege save com __v; n?o torna muta??es de estoque/pedido multdocumento at?micas. Hist?rico financeiro Mixed preexistente permanece: snapshots somente allowlist no servi?o, nunca payload bruto. Auditoria nova n?o usa Mixed nem metadata livre e n?o tem TTL; campos immutable n?o substituem permiss?o Mongo append-only.

@@ -1,0 +1,26 @@
+<div class="page">
+  <header><div><p class="eyebrow">OPERAÇÃO</p><h1>Produção</h1><p>Registre os produtos fabricados para atualizar o estoque vendável.</p></div><div class="today"><strong>{{ totalToday() }}</strong><span>produzidos hoje</span></div></header>
+  <section class="grid">
+    <form #productionForm="ngForm" class="card form" (ngSubmit)="productionForm.valid && register()" appPermission="producao.registrar">
+      <h2>Adicionar produção</h2>
+      <label>Produto<select name="product" [(ngModel)]="selectedProductId" (ngModelChange)="loadCost()" [disabled]="loading()" required>@for (product of products(); track product._id) { <option [value]="product._id">{{ product.name }}</option> }</select></label>
+      <label>Quantidade<input name="quantity" appNumericInput [numericDecimals]="0" [numericMin]="1" [numericMax]="1000000" (numericRejected)="message.set($event)" [(ngModel)]="quantity" [disabled]="loading()" required></label>
+      @if(costLoading()){<p role="status">Conferindo ficha técnica…</p>}
+      @if(costError()){<p role="alert">{{costError()}}</p><button type="button" (click)="loadCost()">Tentar novamente</button>}
+      @if(cost();as c){@if(c.yieldQuantity){<section><h3>Consumo de insumos</h3><p>Ficha para {{c.yieldQuantity}} unidades. O consumo será proporcional ao lote confirmado.</p>@for(item of c.components;track item.ingredientId){<p>{{item.name}}: {{item.quantity}} {{item.unit}} por ficha · saldo {{item.stock}} {{item.unit}}</p>}@if(c.available){<p>Custo médio por unidade: {{money(c.unitCostCents!)}}. Considera apenas insumos cadastrados.</p>}@else{<p>{{c.reason}}</p>}</section>}@else{<p>Sem ficha técnica: produção permitida, sem baixa de insumos nem custo calculado.</p>}}
+      <a routerLink="/insumos">Consultar insumos e fichas</a>
+      <button class="primary" type="submit" [disabled]="loading() || costLoading() || !!costError() || productionForm.invalid">{{ loading() ? 'Salvando...' : 'Confirmar produção' }}</button>
+      @if (message()) { <p class="message">{{ message() }}</p> }
+    </form>
+    <section class="card">
+      <h2>Disponibilidade no salão</h2>
+      <div class="stock-list">@for (product of products(); track product._id) {
+        <div><span><strong>{{ product.name }}</strong><small>{{ product.category }}</small></span><span class="badge" [class.on-demand]="product.availabilityMode === 'MADE_TO_ORDER'">{{ productMode(product) }}</span></div>
+      }</div>
+    </section>
+  </section>
+  <section class="card history"><h2>Produção registrada hoje</h2>
+    @if (!productions().length) { <p class="empty">Nenhuma produção registrada.</p> }
+    @for (item of productions(); track item._id) { <div class="history-row"><span><strong>{{ item.productName }}</strong><small>{{ item.createdAt | date:'HH:mm' }} · {{item.ingredientCostCents != null ? 'Insumos: '+money(item.ingredientCostCents!) : 'Custo não calculado'}}</small></span><b>+{{ item.quantity }}</b></div> }
+  </section>
+</div>

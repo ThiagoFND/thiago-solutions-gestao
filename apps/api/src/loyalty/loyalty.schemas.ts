@@ -1,0 +1,11 @@
+import { Schema } from 'mongoose';
+const options={timestamps:true,autoCreate:false,autoIndex:false,strict:'throw' as const};
+const oid={type:Schema.Types.ObjectId,required:true},text=(maxlength:number)=>({type:String,trim:true,maxlength});
+const base={tenantId:{...oid,immutable:true},actorId:oid,requestId:{...text(36),required:true},inputHash:{...text(64),required:true},version:{type:Number,default:0}};
+const program=new Schema({...base,name:text(120),terms:text(4000),spendCentsPerPoint:Number,validityDays:Number,maxPointsPerOperation:Number,active:{type:Boolean,default:true}},{...options,collection:'loyalty_programs_v2'});
+const member=new Schema({...base,programId:oid,partyId:oid,partyName:text(160),acceptedAt:Date,termsSnapshot:text(4000),marketingConsent:Boolean,debtPoints:{type:Number,default:0,min:0,validate:Number.isSafeInteger}},{...options,collection:'loyalty_members_v2'});
+const entry=new Schema({...base,programId:oid,memberId:oid,kind:{type:String,enum:['CREDIT','REDEEM','REVERSAL']},externalReference:{...text(100),required:true},reason:text(1000),points:Number,remainingPoints:{type:Number,default:0,min:0},reversedPoints:{type:Number,default:0,min:0},debtOffset:{type:Number,default:0,min:0},debtAdded:{type:Number,default:0,min:0},eligibleCents:Number,expiresAt:Date,benefit:text(160),sourceId:Schema.Types.ObjectId,ruleSnapshot:new Schema({spendCentsPerPoint:Number,validityDays:Number,maxPointsPerOperation:Number},{_id:false,strict:'throw'}),allocations:[{_id:false,entryId:oid,points:Number}]},{...options,collection:'loyalty_entries_v2'});
+for(const s of [program,member,entry])s.index({tenantId:1,requestId:1},{unique:true});
+member.index({tenantId:1,programId:1,partyId:1},{unique:true});member.index({tenantId:1,partyName:1,_id:1});
+entry.index({tenantId:1,programId:1,kind:1,externalReference:1},{unique:true});entry.index({tenantId:1,memberId:1,kind:1,expiresAt:1,_id:1});
+export const LOYALTY_MODELS=[{name:'LoyaltyProgram',schema:program},{name:'LoyaltyMember',schema:member},{name:'LoyaltyEntry',schema:entry}];

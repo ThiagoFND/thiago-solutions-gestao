@@ -1,0 +1,13 @@
+services:
+  mongodb:
+    image: mongo:8
+    container_name: salgados-mongodb
+    restart: unless-stopped
+    command: ["mongod", "--auth", "--bind_ip_all"]
+    ports:
+      - "127.0.0.1:27017:27017"
+    volumes:
+      - salgados_mongodb_data:/data/db
+
+volumes:
+  salgados_mongodb_data:

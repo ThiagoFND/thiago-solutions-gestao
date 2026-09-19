@@ -1,0 +1,30 @@
+<main class="public-page"><section class="card">
+<a class="registration-brand" routerLink="/"><span>TS</span><span>Thiago Solutions<small>Digitais</small></span></a>
+<h1>{{ employee ? 'Solicitar acesso à empresa' : 'Cadastrar empresa' }}</h1>
+@if (success()) { <p role="status">{{ employee ? 'Sua solicitação foi recebida. Aguarde a aprovação da empresa.' : 'Empresa e proprietário cadastrados. Aguarde a aprovação da plataforma.' }}</p><a routerLink="/login">Entrar para acompanhar</a> }
+@else { <form #form="ngForm" (ngSubmit)="form.valid && submit()">
+<h2>Empresa</h2><label>CNPJ<input name="cnpj" appDocument="cnpj" #cnpjField="ngModel" [(ngModel)]="company.cnpj" (ngModelChange)="available.set(false)" required maxlength="18"></label>@if(cnpjField.touched && cnpjField.invalid){<p role="alert">Informe um CNPJ válido com 14 dígitos.</p>}
+@if (employee) {<button type="button" (click)="lookup()" [disabled]="busy() || cnpjField.invalid">Verificar empresa</button>}
+@else {
+<label>Razão social<input name="legalName" [(ngModel)]="company.legalName" required minlength="2" maxlength="200"></label>
+<label>Nome fantasia<input name="tradeName" [(ngModel)]="company.tradeName" required minlength="2" maxlength="160"></label>
+<label>E-mail corporativo<input name="corporateEmail" type="email" [(ngModel)]="company.corporateEmail" required email pattern="[^@\s]+@[^@\s]+\.[^@\s]+" maxlength="254"></label>
+<label>Telefone da empresa<input name="companyPhone" [(ngModel)]="company.phone" required appPhone inputmode="tel" maxlength="15"></label>
+}
+<h2>{{ employee ? 'Seus dados' : 'Proprietário' }}</h2>
+<label>Nome completo<input name="name" [(ngModel)]="owner.name" required minlength="2" maxlength="120" autocomplete="name"></label>
+<label>E-mail<input name="email" type="email" [(ngModel)]="owner.email" required email pattern="[^@\s]+@[^@\s]+\.[^@\s]+" maxlength="254" autocomplete="email"></label>
+@if (employee) {
+<label>CPF<input name="cpf" appDocument="cpf" #cpfField="ngModel" [(ngModel)]="cpf" required maxlength="14" autocomplete="off"></label>@if(cpfField.touched && cpfField.invalid){<p role="alert">Informe um CPF válido com 11 dígitos.</p>}
+<label>Telefone<input name="phone" [(ngModel)]="phone" required appPhone inputmode="tel" maxlength="15"></label>
+<label>Cargo ou atividade solicitada<textarea name="jobDescription" [(ngModel)]="jobDescription" required minlength="2" maxlength="500"></textarea></label>
+<p>O perfil de acesso será definido pela empresa ao aprovar sua solicitação.</p>
+}
+<label>Senha (12 a 72 caracteres)<input name="password" type="password" [(ngModel)]="owner.password" required minlength="12" maxlength="72" autocomplete="new-password"></label>
+<label>Confirmar senha<input name="passwordConfirmation" type="password" [(ngModel)]="owner.passwordConfirmation" required minlength="12" maxlength="72" autocomplete="new-password"></label>
+<p class="hint">Telefone: informe DDD e 10 ou 11 dígitos. Senha: 12 a 72 caracteres, até 72 bytes, sem espaços nas pontas ou senha demonstrativa.</p>
+@if(owner.passwordConfirmation && owner.password !== owner.passwordConfirmation){<p role="alert">As senhas informadas não são iguais.</p>}
+@if(message()) {<p role="alert">{{message()}}</p>}
+<button type="submit" [disabled]="busy() || form.invalid || owner.password !== owner.passwordConfirmation">{{busy() ? 'Enviando…' : employee ? 'Enviar solicitação' : 'Cadastrar empresa'}}</button>
+</form><p><a routerLink="/login">Voltar ao login</a></p>}
+</section></main>

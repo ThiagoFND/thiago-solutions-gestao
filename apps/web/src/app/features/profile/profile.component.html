@@ -1,0 +1,5 @@
+<main class="profile card"><a routerLink="/">Voltar ao início</a><h1>Meu perfil</h1><p>Seus dados de cadastro e sua empresa.</p>
+@if(error()){<p role="alert">{{error()}}</p>} @else if(profile(); as p){
+<dl><dt>Nome</dt><dd>{{p.name}}</dd><dt>E-mail</dt><dd>{{p.email}}</dd><dt>Telefone</dt><dd>{{p.phone || 'Não informado'}}</dd><dt>Perfil</dt><dd>{{p.role || 'Aguardando definição'}}</dd><dt>Situação</dt><dd>{{p.status}}</dd><dt>CPF</dt><dd>{{p.cpfMasked || 'Não informado'}}</dd><dt>Cadastro</dt><dd>{{p.createdAt | date:'dd/MM/yyyy HH:mm'}}</dd><dt>Última atualização</dt><dd>{{p.updatedAt | date:'dd/MM/yyyy HH:mm'}}</dd>
+@if(p.company; as c){<dt>Empresa / nome fantasia</dt><dd>{{c.tradeName}}</dd><dt>Razão social</dt><dd>{{c.legalName}}</dd><dt>CNPJ</dt><dd>{{c.cnpjMasked}}</dd><dt>Situação da empresa</dt><dd>{{c.status}}</dd>}</dl><p role="status">Este perfil é somente leitura. O proprietário não pode alterar o próprio cadastro.</p>
+} @else {<p role="status">Carregando perfil…</p>}</main>

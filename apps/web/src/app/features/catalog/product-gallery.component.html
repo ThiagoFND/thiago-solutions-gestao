@@ -1,0 +1,21 @@
+<div class="gallery" role="group" [attr.aria-label]="'Fotos de '+name()" (keydown)="key($event)">
+  <div class="stage" (touchstart)="touchStart($event)" (touchend)="touchEnd($event)" (touchcancel)="touchEnd($event)">
+    @if(current();as photo){
+      @if(!failed().has(photo)){<img class="main-photo" [attr.crossorigin]="credentials(photo)" [src]="url(photo)" [alt]="name()+' — foto '+(index()+1)" loading="lazy" decoding="async" (error)="error(photo)">}
+      @else {<span class="unavailable" role="img" [attr.aria-label]="'Imagem indisponível de '+name()">Imagem indisponível</span>}
+    } @else {<span class="initial" aria-hidden="true">{{name().substring(0,1)}}</span>}
+    @if(featured()){<span class="badge">Destaque</span>}
+    @if(images().length>1){
+      <button type="button" class="arrow previous" aria-label="Foto anterior" (click)="move(-1)">‹</button>
+      <button type="button" class="arrow next" aria-label="Próxima foto" (click)="move(1)">›</button>
+      <span class="counter" aria-live="polite" aria-atomic="true">{{index()+1}} / {{images().length}}</span>
+    }
+  </div>
+  @if(images().length>1){<div class="thumbnails" aria-label="Selecionar foto">
+    @for(photo of images();track photo;let i=$index){
+      <button type="button" [attr.aria-label]="'Mostrar foto '+(i+1)+' de '+name()" [attr.aria-pressed]="index()===i" (click)="choose(i)">
+        @if(!failed().has(photo)){<img [attr.crossorigin]="credentials(photo)" [src]="url(photo)" alt="" loading="lazy" (error)="error(photo)">} @else {<span>{{i+1}}</span>}
+      </button>
+    }
+  </div>}
+</div>

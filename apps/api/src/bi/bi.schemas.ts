@@ -1,0 +1,10 @@
+import { Schema } from 'mongoose';
+const options={timestamps:true,autoCreate:false,autoIndex:false,strict:'throw' as const},oid={type:Schema.Types.ObjectId,required:true},text=(maxlength:number)=>({type:String,trim:true,maxlength});
+const base={tenantId:{...oid,immutable:true},actorId:oid,requestId:{...text(36),required:true},inputHash:text(64),version:{type:Number,default:0}};
+const dataset=new Schema({...base,name:text(120),definition:text(2000),sourceName:text(200),unit:{type:String,enum:['BRL_CENTS','UNITS','MINUTES']},allowedUserIds:[Schema.Types.ObjectId],lastImportedAt:Date,accessHistory:[{_id:false,actorId:oid,at:Date,reason:text(1000),allowedUserIds:[Schema.Types.ObjectId]}]},{...options,collection:'bi_datasets_v2'});
+const rowSchema=new Schema({key:{...text(100),required:true},date:{...text(10),required:true},value:{type:Number,required:true,min:-1e12,max:1e12,validate:Number.isSafeInteger},category:text(100)},{_id:false,strict:'throw'});
+const record=new Schema({tenantId:{...oid,immutable:true},datasetId:oid,importId:oid,actorId:oid,...rowSchema.obj,fingerprint:text(64)},{...options,collection:'bi_records_v2'});
+const batch=new Schema({...base,datasetId:oid,sourceFile:text(160),rows:[rowSchema],inserted:Number,repeated:Number},{...options,collection:'bi_imports_v2'});
+const goal=new Schema({...base,datasetId:oid,month:{...text(7),required:true},target:Number,direction:{type:String,enum:['AT_LEAST','AT_MOST']},reason:text(1000)},{...options,collection:'bi_goals_v2'});
+for(const s of [dataset,batch,goal])s.index({tenantId:1,requestId:1},{unique:true});dataset.index({tenantId:1,allowedUserIds:1,_id:1});record.index({tenantId:1,datasetId:1,key:1},{unique:true});record.index({tenantId:1,datasetId:1,date:1,category:1,_id:1});goal.index({tenantId:1,datasetId:1,month:1},{unique:true});
+export const BI_MODELS=[{name:'BiDataset',schema:dataset},{name:'BiRecord',schema:record},{name:'BiImport',schema:batch},{name:'BiGoal',schema:goal}];

@@ -1,0 +1,19 @@
+.shell { min-height: 100vh; display: grid; grid-template-columns: 250px 1fr; background: #f6f7fb; }
+aside { background: #17152f; color: #fff; padding: 24px 16px; display: flex; flex-direction: column; min-height: 100vh; }
+.logo { display: flex; gap: 12px; align-items: center; padding: 4px 8px 24px; color: #fff; text-decoration: none; }
+.logo > span { display: grid; place-items: center; width: 40px; height: 40px; background: #7c67df; border-radius: 12px; font-weight: 800; }
+.logo div { display: grid; } .logo small, .account small { color: #94a3b8; }
+nav { display: grid; gap: 6px; } nav a { color: #cbd5e1; text-decoration: none; padding: 12px; border-radius: 9px; } nav a:hover, nav a.active { background: #30294b; color: white; }
+.account { margin-top: auto; padding: 16px 8px 0; border-top: 1px solid #334155; display: grid; gap: 4px; }
+.account button { margin-top: 10px; background: transparent; color: #fca5a5; border: 0; padding: 0; text-align: left; cursor: pointer; }
+main { min-width: 0; }
+@media(max-width: 760px) { .shell { grid-template-columns: 1fr; } aside { min-height: auto; padding: 12px; position: sticky; top: 0; z-index: 10; } .logo, .account small, .account strong { display: none; } nav { display: flex; overflow-x: auto; } .account { border: 0; padding: 0; margin: 0 0 0 auto; position: absolute; right: 12px; top: 15px; } }
+
+.security-notice { padding: 16px; margin: 16px; background: #fff7ed; color: #9a3412; border-radius: 8px; }
+
+.pending-badge{background:#ba2033;color:white;border-radius:999px;padding:3px 8px;font-size:12px;margin-left:8px}
+
+@media(max-width:760px){aside{position:relative;display:block}nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));overflow:visible;gap:4px}nav a{min-height:44px;display:flex;align-items:center;padding:10px;font-size:14px}.account{position:static;display:flex;justify-content:flex-end;margin-top:8px}.account button{padding:8px 16px}.logo{display:flex;padding-bottom:12px}.account strong{display:block;font-size:13px}.account{align-items:center;gap:12px}}
+
+.logo strong{font-size:14px}.logo>span{flex-shrink:0;font-size:15px}.logo small{font-size:11px;letter-spacing:.04em}
+

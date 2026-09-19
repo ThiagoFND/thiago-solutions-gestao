@@ -1,0 +1,17 @@
+import { Schema } from 'mongoose';
+const options = { timestamps: true, autoCreate: false, autoIndex: false, strict: 'throw' as const };
+const oid = { type: Schema.Types.ObjectId, required: true };
+const text = (n: number) => ({ type: String, maxlength: n, trim: true });
+const base = { tenantId: { ...oid, immutable: true }, actorId: oid, requestId: { ...text(36), required: true }, inputHash: { ...text(64), required: true }, version: { type: Number, default: 0 } };
+const history = new Schema({ status: String, reason: text(1000), actorId: oid, at: { type: Date, required: true } }, { _id: false, strict: 'throw' });
+const service = new Schema({ ...base, name: { ...text(120), required: true }, description: text(2000), durationMinutes: Number, preparationMinutes: Number, priceCents: Number, active: { type: Boolean, default: true } }, { ...options, collection: 'business_services_v2' });
+const resource = new Schema({ ...base, name: { ...text(120), required: true }, location: text(200), active: { type: Boolean, default: true } }, { ...options, collection: 'service_resources_v2' });
+const appointment = new Schema({ ...base, partyId: oid, partyName: text(160), serviceId: oid, serviceName: text(120), assignedId: oid, assignedName: text(120), resourceId: Schema.Types.ObjectId, resourceName: text(120), startsAt: { type: Date, required: true }, endsAt: { type: Date, required: true }, occupiedStartAt: { type: Date, required: true }, durationMinutes: Number, preparationMinutes: Number, notes: text(2000), status: { type: String, enum: ['BOOKED', 'CONFIRMED', 'ARRIVED', 'IN_PROGRESS', 'DONE', 'NO_SHOW', 'CANCELED'], default: 'BOOKED' }, history: [history] }, { ...options, collection: 'service_appointments_v2' });
+const material = new Schema({ productId: Schema.Types.ObjectId, description: text(160), quantity: Number, unitCents: Number }, { _id: false, strict: 'throw' });
+const order = new Schema({ ...base, partyId: oid, partyName: text(160), serviceId: oid, serviceName: text(120), assignedId: oid, assignedName: text(120), appointmentId: Schema.Types.ObjectId, title: text(160), equipment: text(300), location: text(300), request: text(4000), priority: { type: String, enum: ['LOW', 'NORMAL', 'HIGH', 'URGENT'] }, dueAt: Date, laborCents: Number, budgetCents: Number, approvedBudgetCents: Number, approvedById: Schema.Types.ObjectId, approvedAt: Date, materials: [material], actualMaterials: [material], actualCents: Number, report: text(4000), checks: [{ _id: false, name: text(120), passed: Boolean, evidence: text(1000) }], stockApplied: { type: Boolean, default: false }, status: { type: String, enum: ['OPEN', 'ANALYSIS', 'WAITING_APPROVAL', 'APPROVED', 'IN_PROGRESS', 'COMPLETED', 'DELIVERED', 'CANCELED'], default: 'OPEN' }, history: [history] }, { ...options, collection: 'service_orders_v2' });
+for (const schema of [service, resource, appointment, order]) schema.index({ tenantId: 1, requestId: 1 }, { unique: true });
+appointment.index({ tenantId: 1, assignedId: 1, startsAt: 1, endsAt: 1 });
+appointment.index({ tenantId: 1, resourceId: 1, occupiedStartAt: 1, endsAt: 1 });
+order.index({ tenantId: 1, assignedId: 1, status: 1, dueAt: 1 });
+order.index({ tenantId: 1, appointmentId: 1 }, { unique: true, partialFilterExpression: { appointmentId: { $type: 'objectId' } } });
+export const SERVICE_MODELS = [{ name: 'BusinessServiceDefinition', schema: service }, { name: 'ServiceResource', schema: resource }, { name: 'ServiceAppointment', schema: appointment }, { name: 'ServiceOrder', schema: order }];

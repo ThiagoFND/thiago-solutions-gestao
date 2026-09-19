@@ -1,0 +1,35 @@
+node_modules/
+dist/
+.angular/
+.env
+*.log
+.DS_Store
+
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Generated files and local tool caches
+.npm-cache/
+coverage/
+*.tsbuildinfo
+apps/api/public/
+.codex/*
+!.codex/agents/
+
+# Local uploads, database exports and QA evidence
+.qa-attachments/
+uploads/
+storage/
+dumps/
+*.dump
+*.bson
+docs/*-qa/
+docs/validacao-financeiro/
+docs/*.json
+docs/*.docx
+referencia/
+image/

@@ -1,0 +1,7 @@
+import { Schema } from 'mongoose';
+const options={timestamps:true,autoCreate:false,autoIndex:false,strict:'throw' as const},oid={type:Schema.Types.ObjectId,required:true},text=(maxlength:number)=>({type:String,trim:true,maxlength});
+const base={tenantId:{...oid,immutable:true},actorId:oid,requestId:{...text(36),required:true},inputHash:text(64),version:{type:Number,default:0}};
+const document=new Schema({...base,title:text(160),category:text(100),description:text(2000),originReference:text(160),allowedUserIds:[Schema.Types.ObjectId],latestRevision:{type:Number,default:0},status:{type:String,enum:['ACTIVE','ARCHIVED'],default:'ACTIVE'},history:[{_id:false,action:String,reason:text(1000),actorId:oid,at:Date}]},{...options,collection:'documents_v2'});
+const version=new Schema({...base,documentId:oid,revision:{type:Number,min:1,required:true},name:text(180),mime:text(100),size:{type:Number,min:1,max:5*1024*1024,required:true},sha256:{...text(64),required:true},bytes:{type:Buffer,required:true,select:false},reason:text(1000)},{...options,collection:'document_versions_v2'});
+for(const s of [document,version])s.index({tenantId:1,requestId:1},{unique:true});document.index({tenantId:1,allowedUserIds:1,status:1,_id:1});version.index({tenantId:1,documentId:1,revision:1},{unique:true});
+export const DOCUMENT_MODELS=[{name:'ManagedDocument',schema:document},{name:'DocumentVersion',schema:version}];

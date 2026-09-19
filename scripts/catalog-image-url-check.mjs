@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import { catalogImageUrl } from '../apps/web/src/app/features/catalog/catalog-image-url.ts';
+const id='0123456789abcdef01234567', path=`/api/public/images/${id}`;
+assert.equal(catalogImageUrl(path,'http://localhost:3000/api'),`http://localhost:3000/api/public/images/${id}`);
+assert.equal(catalogImageUrl(path,'http://localhost:3000/api/',true),`http://localhost:3000/api/catalog-images/${id}`);
+assert.equal(catalogImageUrl(path,'/api'),path);
+assert.equal(catalogImageUrl(path,'/api',true),`/api/catalog-images/${id}`);
+assert.equal(catalogImageUrl('https://example.invalid/image.png','/api'),'https://example.invalid/image.png');
+assert.equal(catalogImageUrl('','/api'),'');
+console.log('6 image URL assertions passed');

@@ -1,0 +1,13 @@
+import { Schema } from 'mongoose';
+const options={timestamps:true,autoCreate:false,autoIndex:false,strict:'throw' as const};
+const oid={type:Schema.Types.ObjectId,required:true},text=(maxlength:number)=>({type:String,trim:true,maxlength});
+const base={tenantId:{...oid,immutable:true},actorId:oid,requestId:{...text(36),required:true},inputHash:text(64),version:{type:Number,default:0}};
+const history=new Schema({status:String,reason:text(1000),actorId:oid,at:Date},{_id:false,strict:'throw'});
+const revision=new Schema({scope:text(6000),endsOn:String,budgetCents:Number,revision:Number,actorId:oid,at:Date,reason:text(1000)},{_id:false,strict:'throw'});
+const project=new Schema({...base,name:text(160),partyId:Schema.Types.ObjectId,partyName:text(160),managerId:oid,memberIds:[Schema.Types.ObjectId],startsOn:String,revisions:[revision],status:{type:String,enum:['PLANNED','ACTIVE','SUSPENDED','COMPLETED','CANCELED'],default:'PLANNED'},history:[history]},{...options,collection:'business_projects_v2'});
+const task=new Schema({...base,projectId:oid,title:text(160),description:text(4000),assignedId:oid,dueOn:String,priority:String,estimatedMinutes:Number,dependencies:[Schema.Types.ObjectId],status:{type:String,enum:['TODO','IN_PROGRESS','REVIEW','DONE','CANCELED'],default:'TODO'},history:[history]},{...options,collection:'project_tasks_v2'});
+const comment=new Schema({...base,projectId:oid,taskId:oid,text:text(4000),authorName:text(160)},{...options,collection:'project_comments_v2'});
+const time=new Schema({...base,projectId:oid,taskId:oid,startsAt:Date,endsAt:Date,minutes:Number,billable:Boolean,description:text(1000),status:{type:String,enum:['PENDING','APPROVED','REJECTED'],default:'PENDING'},reviewerId:Schema.Types.ObjectId,reviewedAt:Date,reason:text(1000)},{...options,collection:'project_time_v2'});
+for(const s of [project,task,comment,time])s.index({tenantId:1,requestId:1},{unique:true});
+project.index({tenantId:1,memberIds:1,status:1,_id:1});task.index({tenantId:1,projectId:1,dueOn:1,_id:1});comment.index({tenantId:1,taskId:1,_id:-1});time.index({tenantId:1,actorId:1,startsAt:1,endsAt:1});time.index({tenantId:1,projectId:1,status:1,_id:1});
+export const PROJECT_MODELS=[{name:'BusinessProject',schema:project},{name:'ProjectTask',schema:task},{name:'ProjectComment',schema:comment},{name:'ProjectTime',schema:time}];
