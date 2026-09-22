@@ -1,18 +1,152 @@
 <div class="landing">
+  <a class="skip" href="#conteudo">Ir para o conteúdo</a>
+
   <header class="topbar">
-    <a class="brand" routerLink="/" aria-label="Thiago Solutions Digitais — início"><span class="monogram">TS</span><span>Thiago Solutions<small>Digitais</small></span></a>
-    <nav aria-label="Navegação principal"><a href="#recursos">Serviços</a><a href="#planos">Planos</a><a href="#diagnostico">Encontre sua solução</a><a href="#como-funciona">Como funciona</a><a class="login-link" [routerLink]="auth.isAuthenticated() ? auth.home() : '/login'">{{auth.isAuthenticated() ? 'Acessar painel' : 'Entrar'}} <span aria-hidden="true">↗</span></a></nav>
+    <a class="brand" routerLink="/" aria-label="Thiago Solutions Digitais — início">
+      <span class="monogram" aria-hidden="true">TS</span>
+      <span class="brand-name">Thiago Solutions<small>Digitais</small></span>
+    </a>
+
+    <nav class="nav-wide" aria-label="Navegação principal">
+      <a href="#recursos">Serviços</a>
+      <a href="#planos">Planos</a>
+      <a href="#diagnostico">Encontre sua solução</a>
+      <a href="#como-funciona">Como funciona</a>
+    </nav>
+
+    <div class="topbar-actions">
+      <a class="btn btn-quiet" [routerLink]="auth.isAuthenticated() ? auth.home() : '/login'">
+        {{ auth.isAuthenticated() ? 'Acessar painel' : 'Entrar' }}
+      </a>
+      <details class="menu">
+        <summary aria-label="Abrir menu de navegação"><span class="bars" aria-hidden="true"></span></summary>
+        <nav class="menu-panel" aria-label="Menu">
+          <a href="#recursos">Serviços</a>
+          <a href="#planos">Planos</a>
+          <a href="#diagnostico">Encontre sua solução</a>
+          <a href="#como-funciona">Como funciona</a>
+        </nav>
+      </details>
+    </div>
   </header>
-  <main>
+
+  <main id="conteudo">
     <section class="hero">
-      <div class="hero-copy"><p class="eyebrow"><span></span> GESTÃO QUE ACOMPANHA SUA OPERAÇÃO</p><h1>Mais clareza para<br>cuidar do seu <em>negócio.</em></h1><p class="lead">Conecte vendas, produção e financeiro em um só lugar. Organize a rotina da sua empresa com acesso para cada pessoa da equipe.</p><div class="hero-actions"><a class="button primary" routerLink="/cadastrar-empresa">Cadastrar minha empresa <span aria-hidden="true">→</span></a><a class="button secondary" [routerLink]="auth.isAuthenticated() ? auth.home() : '/login'">{{auth.isAuthenticated() ? 'Acessar meu painel' : 'Já tenho uma conta'}}</a></div><p class="access-note">Faz parte de uma equipe? <a routerLink="/solicitar-acesso">Solicite acesso à empresa</a></p></div>
-      <div class="overview" aria-label="Áreas integradas da plataforma">
-        <div class="overview-top"><span class="mini-mark">TS</span><span>O seu negócio, conectado</span><span class="three-dots" aria-hidden="true">•••</span></div>
-        <div class="overview-body"><p class="overview-caption">UMA VISÃO MAIS COMPLETA</p><h2>Da operação à decisão.</h2><div class="overview-grid"><article><span class="module-icon" aria-hidden="true">↗</span><h3>Vendas</h3><p>Pedidos e recebimentos</p></article><article><span class="module-icon" aria-hidden="true">◫</span><h3>Produção</h3><p>Processos e rendimento</p></article><article><span class="module-icon" aria-hidden="true">◈</span><h3>Financeiro</h3><p>Caixa e recebimentos</p></article><article><span class="module-icon" aria-hidden="true">◎</span><h3>Equipe</h3><p>Acessos por perfil</p></article></div><div class="overview-footer"><span class="connection-line" aria-hidden="true"></span><span>Informações organizadas para o dia a dia</span></div></div>
+      <span class="hero-sky" aria-hidden="true"></span>
+
+      <div class="hero-copy">
+        <p class="eyebrow rise"><span class="dot" aria-hidden="true"></span>Gestão que acompanha sua operação</p>
+        <h1 class="rise rise-1">Mais clareza para<br />cuidar do seu <em>negócio.</em></h1>
+        <p class="lead rise rise-2">
+          Conecte vendas, produção e financeiro em um só lugar. Organize a rotina da sua
+          empresa com acesso para cada pessoa da equipe.
+        </p>
+        <div class="hero-actions rise rise-3">
+          <a class="btn btn-primary btn-lg" routerLink="/cadastrar-empresa">
+            Cadastrar minha empresa <span aria-hidden="true">→</span>
+          </a>
+          <a class="btn btn-outline btn-lg" [routerLink]="auth.isAuthenticated() ? auth.home() : '/login'">
+            {{ auth.isAuthenticated() ? 'Acessar meu painel' : 'Já tenho uma conta' }}
+          </a>
+        </div>
+        <p class="access-note rise rise-4">
+          Faz parte de uma equipe? <a routerLink="/solicitar-acesso">Solicite acesso à empresa</a>
+        </p>
       </div>
+
+      <!-- Miniatura do painel real: os itens do menu e o bloco de conta são os do
+           shell da aplicação. Os valores são de exemplo (pendência D6 do spec). -->
+      <figure class="showcase rise rise-4" role="img"
+        aria-label="Prévia do painel: menu lateral com Visão geral, Vendas, Estoque, Produção, Financeiro e Usuários; os indicadores do dia, a equipe com acesso e a lista dos últimos pedidos.">
+        <div class="mockup">
+          <div class="mock-side">
+            <div class="mock-brand">
+              <span class="mini-mark">TS</span>
+              <span class="mock-stack"><b>Thiago Solutions</b><i>Digitais · Gestão</i></span>
+            </div>
+            <div class="mock-nav">
+              <span class="on">Visão geral</span>
+              <span>Vendas</span>
+              <span>Estoque</span>
+              <span>Produção</span>
+              <span>Financeiro</span>
+              <span>Usuários</span>
+            </div>
+            <div class="mock-user">
+              <span class="mock-avatar">AP</span>
+              <span class="mock-stack"><b>Ana Prado</b><i>Proprietária</i></span>
+            </div>
+          </div>
+
+          <div class="mock-main">
+            <div class="mock-top">
+              <b>Visão geral</b>
+              <span class="mock-search">Buscar pedido, produto ou cliente</span>
+              <span class="mock-avatars">
+                <span class="a1">AP</span><span class="a2">RM</span><span class="a3">LC</span><span class="more">+3</span>
+              </span>
+            </div>
+
+            <div class="mock-body">
+              <div class="mock-kpis">
+                <div><i>Vendas de hoje</i><b>R$ 12.487,50</b><em>18 pedidos pagos</em></div>
+                <div><i>Em produção</i><b>7</b><em>2 aguardando insumo</em></div>
+                <div><i>A receber</i><b>R$ 8.312,90</b><em>3 vencem hoje</em></div>
+              </div>
+
+              <div class="mock-list">
+                <div class="mock-list-head"><span>Últimos pedidos</span><span class="mock-link">Ver todos</span></div>
+                <div class="mock-row"><span>#1042 · Balcão</span><span class="badge badge-success">Concluído</span><b>R$ 184,50</b></div>
+                <div class="mock-row"><span>#1041 · Entrega</span><span class="badge badge-info">Em produção</span><b>R$ 96,00</b></div>
+                <div class="mock-row"><span>#1040 · Balcão</span><span class="badge badge-success">Concluído</span><b>R$ 312,70</b></div>
+                <div class="mock-row"><span>#1039 · Retirada</span><span class="badge badge-warning">Aguardando</span><b>R$ 58,90</b></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </figure>
     </section>
+
     <app-solutions />
-    <section class="getting-started" id="como-funciona"><div><p class="eyebrow">COMECE PELO ESSENCIAL</p><h2>Seu próximo passo<br>é simples.</h2><p>Escolha o caminho que faz sentido para você.</p></div><ol><li><span>01</span><div><h3>Cadastre sua empresa</h3><p>Informe os dados da empresa e do proprietário. Acompanhe a aprovação da plataforma.</p><a routerLink="/cadastrar-empresa">Cadastrar empresa →</a></div></li><li><span>02</span><div><h3>Entre para a equipe</h3><p>Já existe uma empresa cadastrada? Solicite acesso com o CNPJ e aguarde a aprovação.</p><a routerLink="/solicitar-acesso">Solicitar acesso →</a></div></li><li><span>03</span><div><h3>Acesse sua área</h3><p>Use suas credenciais para abrir as ferramentas disponíveis para o seu perfil.</p><a [routerLink]="auth.isAuthenticated() ? auth.home() : '/login'">{{auth.isAuthenticated() ? 'Acessar painel' : 'Entrar na plataforma'}} →</a></div></li></ol></section>
+
+    <section class="steps-section" id="como-funciona">
+      <div class="section-head">
+        <p class="eyebrow"><span class="dot" aria-hidden="true"></span>Comece pelo essencial</p>
+        <h2>Seu próximo passo é simples.</h2>
+        <p class="section-lead">Escolha o caminho que faz sentido para você.</p>
+      </div>
+
+      <ol class="steps">
+        <li>
+          <span class="step-number" aria-hidden="true">01</span>
+          <h3>Cadastre sua empresa</h3>
+          <p>Informe os dados da empresa e do proprietário. Acompanhe a aprovação da plataforma.</p>
+          <a routerLink="/cadastrar-empresa">Cadastrar empresa <span aria-hidden="true">→</span></a>
+        </li>
+        <li>
+          <span class="step-number" aria-hidden="true">02</span>
+          <h3>Entre para a equipe</h3>
+          <p>Já existe uma empresa cadastrada? Solicite acesso com o CNPJ e aguarde a aprovação.</p>
+          <a routerLink="/solicitar-acesso">Solicitar acesso <span aria-hidden="true">→</span></a>
+        </li>
+        <li>
+          <span class="step-number" aria-hidden="true">03</span>
+          <h3>Acesse sua área</h3>
+          <p>Use suas credenciais para abrir as ferramentas disponíveis para o seu perfil.</p>
+          <a [routerLink]="auth.isAuthenticated() ? auth.home() : '/login'">
+            {{ auth.isAuthenticated() ? 'Acessar painel' : 'Entrar na plataforma' }} <span aria-hidden="true">→</span>
+          </a>
+        </li>
+      </ol>
+    </section>
   </main>
-  <footer><a class="brand" routerLink="/"><span class="monogram">TS</span><span>Thiago Solutions<small>Digitais</small></span></a><p>Gestão conectada ao seu dia a dia.</p><a routerLink="/plataforma/login">Administração da plataforma</a></footer>
+
+  <footer>
+    <a class="brand" routerLink="/">
+      <span class="monogram" aria-hidden="true">TS</span>
+      <span class="brand-name">Thiago Solutions<small>Digitais</small></span>
+    </a>
+    <p>Gestão conectada ao seu dia a dia.</p>
+    <a class="footer-admin" routerLink="/plataforma/login">Administração da plataforma</a>
+  </footer>
 </div>
