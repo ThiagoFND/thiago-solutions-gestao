@@ -1,0 +1,128 @@
+// Camada 3 do design system da RivoCode (ds.rivocode.com.br/temas.md), portada para
+// custom properties. A biblioteca é React e não entra aqui; a linguagem dela, sim.
+//
+// Regra: este é o único arquivo da pasta que escreve cor literal. Todo o resto pede
+// um papel. Preencher e escrever são tokens diferentes: --ts-danger preenche e recebe
+// --ts-danger-fg por cima; --ts-danger-text é o vermelho que se lê sobre o fundo.
+
+@mixin tokens {
+  // Superfície
+  --ts-bg: #f5f5fa;
+  --ts-surface: #fff;
+  --ts-surface-raised: #fbfaff;
+
+  // Texto
+  --ts-fg: #16152a;
+  --ts-fg-muted: #5b5870;
+  --ts-fg-subtle: #6f6d87;
+
+  // Acento
+  --ts-accent: #7560d5;
+  --ts-accent-hover: #6952c9;
+  --ts-accent-active: #5d47b6;
+  --ts-accent-fg: #fff;
+  --ts-accent-text: #5a45a9;
+  --ts-accent-subtle: #efebfd;
+
+  // Linha e foco
+  --ts-border: #e5e3f0;
+  --ts-border-strong: #cbc8dd;
+  --ts-ring: #7560d5;
+
+  // Estados: preencher, ler-sobre-o-preenchimento, ler-sobre-o-fundo, fundo tênue
+  --ts-success: #15794f; --ts-success-fg: #fff; --ts-success-text: #0f6343; --ts-success-subtle: #e5f3ec;
+  --ts-warning: #a35d00; --ts-warning-fg: #fff; --ts-warning-text: #8a4f00; --ts-warning-subtle: #fdf0e1;
+  --ts-danger:  #b42318; --ts-danger-fg:  #fff; --ts-danger-text:  #9b1c12; --ts-danger-subtle:  #fdeceb;
+  --ts-info:    #1f5fc4; --ts-info-fg:    #fff; --ts-info-text:    #1a51a8; --ts-info-subtle:    #e9f0fc;
+
+  // Sombra: linha, painel, sobreposição. Cada uma carrega o hairline que separa.
+  --ts-shadow-1: 0 1px 2px rgb(22 21 42 / .05), 0 0 0 1px rgb(22 21 42 / .04);
+  --ts-shadow-2: 0 10px 28px -8px rgb(22 21 42 / .12), 0 0 0 1px rgb(22 21 42 / .05);
+  --ts-shadow-3: 0 28px 64px -16px rgb(22 21 42 / .22), 0 0 0 1px rgb(22 21 42 / .06);
+  --ts-glow-accent: 0 12px 34px -10px rgb(117 96 213 / .55);
+
+  // Acabamento: o gradiente do céu do hero, um gesto só, no papel de --rc-accent-image
+  --ts-hero-sky:
+    radial-gradient(58% 62% at 50% -8%, #dcd5fa 0%, transparent 70%),
+    radial-gradient(38% 46% at 10% 16%, #e8e3fd 0%, transparent 66%),
+    radial-gradient(38% 46% at 90% 20%, #e2ecfd 0%, transparent 66%);
+
+  // Forma
+  --ts-z-base: 1;
+  --ts-z-raised: 2;
+  --ts-z-sticky: 20;
+  --ts-z-dropdown: 30;
+  --ts-z-skip: 40;
+
+  --ts-radius-sm: 8px;
+  --ts-radius-md: 12px;
+  --ts-radius-lg: 18px;
+  --ts-radius-xl: 28px;
+  --ts-radius-pill: 999px;
+
+  // Altura de controle: nunca cravar, sempre pedir o degrau
+  --ts-control-sm: 36px;
+  --ts-control-md: 44px;
+  --ts-control-lg: 52px;
+
+  // Tipografia. Os passos de marketing vivem no tema, não no núcleo.
+  --ts-font-display: Inter, system-ui, sans-serif;
+  --ts-text-hero: clamp(36px, 5vw, 62px);
+  --ts-text-display: clamp(27px, 3.4vw, 42px);
+  --ts-text-title: clamp(20px, 2.2vw, 26px);
+
+  // Ritmo: três valores dentro da seção, e só três.
+  --ts-gap-1: 8px;
+  --ts-gap-2: 20px;
+  --ts-pad-1: 12px;
+  --ts-pad-2: 16px;
+  --ts-gap-3: 36px;
+  --ts-section: clamp(64px, 8vw, 104px);
+  --ts-gutter: clamp(20px, 5vw, 56px);
+  --ts-max: 1180px;
+  --ts-shell: calc(var(--ts-max) + 2 * var(--ts-gutter));
+}
+
+// Primitivas compartilhadas pelos dois componentes da landing.
+@mixin primitives {
+  *:focus-visible { outline: 3px solid var(--ts-ring); outline-offset: 3px; border-radius: var(--ts-radius-sm); }
+
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: var(--ts-gap-1); margin: 0 0 var(--ts-pad-2);
+    font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--ts-fg-subtle);
+  }
+  .eyebrow .dot { width: 6px; height: 6px; border-radius: var(--ts-radius-pill); background: var(--ts-accent); flex-shrink: 0; }
+
+  .section-head {
+    max-width: 680px; margin: 0 auto var(--ts-gap-3); text-align: center;
+    h2 { font-family: var(--ts-font-display); font-size: var(--ts-text-display); font-weight: 700;
+         line-height: 1.12; letter-spacing: -.035em; margin: 0 0 var(--ts-pad-1); color: var(--ts-fg); }
+    .section-lead { margin: 0; font-size: 15px; line-height: 1.7; color: var(--ts-fg-muted); }
+  }
+
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: var(--ts-gap-1);
+    min-height: var(--ts-control-md); padding: 0 var(--ts-gap-2); border: 1px solid transparent;
+    border-radius: var(--ts-radius-md); font-size: 14px; font-weight: 650; line-height: 1;
+    text-decoration: none; cursor: pointer; white-space: nowrap;
+    transition: background-color .16s ease, border-color .16s ease, transform .16s ease;
+  }
+  .btn-lg { min-height: var(--ts-control-lg); padding: 0 24px; font-size: 15px; }
+  .btn-primary { background: var(--ts-accent); color: var(--ts-accent-fg); }
+  .btn-primary:hover { background: var(--ts-accent-hover); }
+  .btn-primary:active { background: var(--ts-accent-active); }
+  .btn-outline { background: var(--ts-surface); border-color: var(--ts-border-strong); color: var(--ts-fg); }
+  .btn-outline:hover { border-color: var(--ts-accent); color: var(--ts-accent-text); }
+  .btn-quiet { background: var(--ts-surface); border-color: var(--ts-border); color: var(--ts-fg); }
+  .btn-quiet:hover { border-color: var(--ts-border-strong); }
+
+  .badge {
+    display: inline-flex; align-items: center; gap: 8px; padding: 4px var(--ts-pad-1);
+    border-radius: var(--ts-radius-pill); font-size: 11.5px; font-weight: 650; line-height: 1.35;
+  }
+  .badge-success { background: var(--ts-success-subtle); color: var(--ts-success-text); }
+  .badge-info    { background: var(--ts-info-subtle);    color: var(--ts-info-text); }
+  .badge-warning { background: var(--ts-warning-subtle); color: var(--ts-warning-text); }
+  .badge-neutral { background: var(--ts-bg); color: var(--ts-fg-muted); box-shadow: inset 0 0 0 1px var(--ts-border); }
+}

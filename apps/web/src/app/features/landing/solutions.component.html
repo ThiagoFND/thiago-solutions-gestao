@@ -1,11 +1,232 @@
-<section id="recursos" class="solutions"><div class="heading"><p class="eyebrow">SOLUÇÕES QUE RESPEITAM SUA ROTINA</p><h2>Comece pelo problema.<br>Escolha o que faz sentido.</h2><p>Você não precisa contratar tudo. Os módulos usam os mesmos cadastros da sua empresa, e a solução pode crescer conforme sua necessidade.</p></div>
-@if(catalog();as c){<div class="service-grid">@for(service of c.services;track service.code){<article><span class="state">{{states[service.state]}}</span><h3>{{service.name}}</h3><p>{{service.benefit}}</p><a href="#diagnostico">Entender se preciso →</a></article>}</div>
-<div class="heading" id="planos"><p class="eyebrow">UM PONTO DE PARTIDA, NÃO UMA OBRIGAÇÃO</p><h2>Combinações para o seu negócio</h2><p>Escolher um pacote ajuda quando os processos precisam caminhar juntos. Se ele tiver algo desnecessário, podemos recomendar apenas os módulos úteis.</p><p>Os pacotes abaixo apresentam a composição proposta. Recursos em preparação ou dependentes de integração são identificados no catálogo e precisam ser confirmados antes da contratação.</p></div><div class="plan-grid">@for(plan of c.plans;track plan.code){<article><h3>{{plan.name}}</h3><p class="audience">{{plan.audience}}</p><p>{{plan.benefit}}</p><ul>@for(code of plan.modules;track code){<li>{{nameOf(code)}}</li>}</ul><a href="#diagnostico">Conte como você trabalha →</a></article>}</div>
-<div class="heading"><p class="eyebrow">ESCOLHA O TAMANHO DO SEU PRÓXIMO PASSO</p><h2>Planos disponíveis para contratação</h2><p>A composição abaixo acompanha o catálogo atual. Os cadastros da sua empresa continuam os mesmos quando você amplia a solução.</p></div><div class="plan-grid">@for(plan of c.commercialPlans;track plan.code){<article><h3>{{plan.name}}</h3><p>{{plan.benefit}}</p><ul>@for(code of plan.modules;track code){<li>{{nameOf(code)}}</li>}</ul><p>Até {{plan.activeUsers}} usuários ativos.</p><a href="#diagnostico">Entender se este plano me atende →</a></article>}<article><h3>Personalizado</h3><p>Quando você precisa resolver um problema específico, escolha os módulos úteis para sua rotina. Você pode começar com uma única solução e ampliar depois.</p><a href="#diagnostico">Encontrar os módulos certos →</a></article></div>
-<section class="diagnostic" id="diagnostico" aria-labelledby="diagnostic-title"><div><p class="eyebrow">VAMOS ENTENDER SUA NECESSIDADE</p><h2 id="diagnostic-title">Diga seu problema.<br>A gente ajuda a escolher.</h2><p>Explique o que está difícil, como você trabalha hoje e o que gostaria de melhorar. Não inclua senhas, dados bancários ou informações pessoais dos seus clientes.</p><p>A sugestão utiliza o catálogo e regras de correspondência. É uma orientação inicial para conversar com nossa equipe, sem contratação automática.</p></div><div>
-@if(message()){<p class="notice" role="status">{{message()}}</p>}
-<form #problemForm="ngForm" (ngSubmit)="recommend()"><fieldset [disabled]="busy()||sent()"><label>O que você precisa resolver?<textarea name="problem" [(ngModel)]="problem" (ngModelChange)="changed()" required minlength="30" maxlength="4000" placeholder="Ex.: tenho uma pequena loja, não sei quando repor os produtos e perco o controle das vendas do dia."></textarea><small>De 30 a 4.000 caracteres. Quanto mais contexto, melhor.</small></label><details><summary>Quero indicar algumas áreas (opcional)</summary><div class="needs">@for(service of c.services;track service.code){<label class="check"><input type="checkbox" [checked]="needs.includes(service.code)" (change)="toggle(service.code,$any($event.target).checked)">{{service.name}}</label>}</div></details><button [disabled]="problemForm.invalid">{{busy()?'Analisando…':'Ver sugestão de solução'}}</button></fieldset></form>
-@if(result();as recommendation){<section class="recommendation" aria-label="Solução sugerida"><h3>{{recommendation.plan?.name||'Uma solução personalizada para você'}}</h3><p>{{recommendation.message}}</p>@for(module of recommendation.modules;track module.code){<article><h4>{{module.name}}</h4><p>{{module.reason}}</p><small>{{states[module.state]}}</small></article>}@empty{<p>Nossa equipe fará uma análise individual do seu relato.</p>}</section>
-<form #contactForm="ngForm" (ngSubmit)="submit()"><fieldset [disabled]="busy()||sent()"><h3>Vamos conversar sobre essa solução?</h3><div class="contact-fields"><label>Seu nome<input name="name" [(ngModel)]="name" required minlength="2" maxlength="120" autocomplete="name"></label><label>E-mail<input type="email" name="email" [(ngModel)]="email" required email maxlength="254" autocomplete="email"></label><label>Telefone com DDD<input name="phone" [(ngModel)]="phone" required pattern="[0-9]{10,15}" inputmode="numeric" maxlength="15" autocomplete="tel"><small>Somente números; inclua o código do país se necessário.</small></label></div><label class="honeypot" aria-hidden="true">Site<input name="website" [(ngModel)]="website" tabindex="-1" autocomplete="off"></label><label class="check"><input name="consent" type="checkbox" [(ngModel)]="consent" required>Autorizo a Thiago Solutions Digitais a receber meu relato e os dados de contato para analisar esta solicitação e falar comigo sobre a solução sugerida.</label><p class="privacy">Nome, telefone, e-mail, relato e sugestão serão registrados no painel administrativo e encaminhados à equipe comercial por e-mail. Esses dados não aparecem publicamente.</p><button [disabled]="contactForm.invalid||!consent">{{sent()?'Solicitação registrada':'Enviar para nossa equipe'}}</button></fieldset></form>}
-</div></section>}
-</section>
+<div class="solutions">
+  <section id="recursos" class="block">
+    <div class="section-head">
+      <p class="eyebrow"><span class="dot" aria-hidden="true"></span>Soluções que respeitam sua rotina</p>
+      <h2>Comece pelo problema. Escolha o que faz sentido.</h2>
+      <p class="section-lead">
+        Você não precisa contratar tudo. Os módulos usam os mesmos cadastros da sua empresa,
+        e a solução pode crescer conforme sua necessidade.
+      </p>
+    </div>
+
+    @if (loading()) {
+      <p class="sr-only" role="status">Carregando o catálogo de serviços.</p>
+      <div class="grid" aria-hidden="true">
+        @for (placeholder of placeholders; track placeholder) {
+          <article class="card is-loading">
+            <span class="skel skel-pill"></span>
+            <span class="skel skel-title"></span>
+            <span class="skel skel-line"></span>
+            <span class="skel skel-line short"></span>
+          </article>
+        }
+      </div>
+    } @else if (loadError()) {
+      <div class="state state-error" role="alert">
+        <span class="state-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <circle cx="12" cy="12" r="9" /><path d="M12 7.5v5.5" /><path d="M12 16.4h.01" />
+          </svg>
+        </span>
+        <h3>Não foi possível carregar os serviços.</h3>
+        <p>
+          Pode ser uma instabilidade momentânea. Tente de novo em instantes — ou conte direto o
+          que você precisa resolver, que o diagnóstico continua funcionando.
+        </p>
+        <div class="state-actions">
+          <button type="button" class="btn btn-primary" (click)="load()">Tentar de novo</button>
+          <a class="btn btn-outline" href="#diagnostico">Descrever minha necessidade</a>
+        </div>
+      </div>
+    } @else if (catalog(); as c) {
+      @if (c.services.length) {
+        <div class="grid">
+          @for (service of c.services; track service.code) {
+            <article class="card">
+              <span class="badge badge-{{ state(service.state).tone }}">{{ state(service.state).label }}</span>
+              <h3>{{ service.name }}</h3>
+              <p>{{ service.benefit }}</p>
+              <a href="#diagnostico">Entender se preciso <span aria-hidden="true">→</span></a>
+            </article>
+          }
+        </div>
+      } @else {
+        <div class="state">
+          <span class="state-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3.5 8.5 12 4l8.5 4.5v7L12 20l-8.5-4.5z" /><path d="M3.5 8.5 12 13l8.5-4.5" /><path d="M12 13v7" />
+            </svg>
+          </span>
+          <h3>Nenhum serviço publicado no momento.</h3>
+          <p>O catálogo está em atualização. Conte o que você precisa resolver e nossa equipe responde com uma recomendação.</p>
+          <a class="btn btn-primary" href="#diagnostico">Descrever minha necessidade</a>
+        </div>
+      }
+    }
+  </section>
+
+  @if (!loading() && catalog(); as c) {
+    @if (c.plans.length) {
+      <section class="block">
+        <div class="section-head">
+          <p class="eyebrow"><span class="dot" aria-hidden="true"></span>Um ponto de partida, não uma obrigação</p>
+          <h2>Combinações para o seu negócio</h2>
+          <p class="section-lead">
+            Escolher um pacote ajuda quando os processos precisam caminhar juntos. Se ele tiver
+            algo desnecessário, podemos recomendar apenas os módulos úteis. Recursos em preparação
+            ou dependentes de integração são identificados no catálogo e precisam ser confirmados
+            antes da contratação.
+          </p>
+        </div>
+        <div class="grid">
+          @for (plan of c.plans; track plan.code) {
+            <article class="card">
+              <h3>{{ plan.name }}</h3>
+              <p class="audience">{{ plan.audience }}</p>
+              <p>{{ plan.benefit }}</p>
+              <ul class="modules">
+                @for (code of plan.modules; track code) {<li>{{ nameOf(code) }}</li>}
+              </ul>
+              <a href="#diagnostico">Conte como você trabalha <span aria-hidden="true">→</span></a>
+            </article>
+          }
+        </div>
+      </section>
+    }
+
+    @if (c.commercialPlans.length) {
+    <section id="planos" class="block">
+      <div class="section-head">
+        <p class="eyebrow"><span class="dot" aria-hidden="true"></span>Escolha o tamanho do seu próximo passo</p>
+        <h2>Planos disponíveis para contratação</h2>
+        <p class="section-lead">
+          A composição abaixo acompanha o catálogo atual. Os cadastros da sua empresa continuam
+          os mesmos quando você amplia a solução.
+        </p>
+      </div>
+      <div class="grid">
+        @for (plan of c.commercialPlans; track plan.code) {
+          <article class="card">
+            <h3>{{ plan.name }}</h3>
+            <p>{{ plan.benefit }}</p>
+            <ul class="modules">
+              @for (code of plan.modules; track code) {<li>{{ nameOf(code) }}</li>}
+            </ul>
+            <p class="limit">Até {{ plan.activeUsers }} usuários ativos.</p>
+            <a href="#diagnostico">Entender se este plano me atende <span aria-hidden="true">→</span></a>
+          </article>
+        }
+        <article class="card card-accent">
+          <h3>Personalizado</h3>
+          <p>
+            Quando você precisa resolver um problema específico, escolha os módulos úteis para sua
+            rotina. Você pode começar com uma única solução e ampliar depois.
+          </p>
+          <a href="#diagnostico">Encontrar os módulos certos <span aria-hidden="true">→</span></a>
+        </article>
+      </div>
+    </section>
+    }
+  }
+
+  <section class="block diagnostic" id="diagnostico" aria-labelledby="diagnostic-title">
+    <div class="diagnostic-intro">
+      <p class="eyebrow"><span class="dot" aria-hidden="true"></span>Vamos entender sua necessidade</p>
+      <h2 id="diagnostic-title">Diga seu problema. A gente ajuda a escolher.</h2>
+      <p>
+        Explique o que está difícil, como você trabalha hoje e o que gostaria de melhorar.
+        Não inclua senhas, dados bancários ou informações pessoais dos seus clientes.
+      </p>
+      <p class="fine">
+        A sugestão utiliza o catálogo e regras de correspondência. É uma orientação inicial para
+        conversar com nossa equipe, sem contratação automática.
+      </p>
+    </div>
+
+    <div class="diagnostic-form">
+      @if (message()) {
+        <p class="notice" [class.notice-ok]="sent()" [attr.role]="sent() ? 'status' : 'alert'">{{ message() }}</p>
+      }
+
+      <form #problemForm="ngForm" (ngSubmit)="recommend()">
+        <fieldset [disabled]="busy() || sent()">
+          <label>
+            O que você precisa resolver?
+            <textarea name="problem" [(ngModel)]="problem" (ngModelChange)="changed()" required
+              minlength="30" maxlength="4000"
+              placeholder="Ex.: tenho uma pequena loja, não sei quando repor os produtos e perco o controle das vendas do dia."></textarea>
+            <small>De 30 a 4.000 caracteres. Quanto mais contexto, melhor.</small>
+          </label>
+
+          @if (catalog(); as c) {
+            <details class="areas">
+              <summary>Quero indicar algumas áreas (opcional)</summary>
+              <div class="needs">
+                @for (service of c.services; track service.code) {
+                  <label class="check">
+                    <input type="checkbox" [checked]="needs.includes(service.code)"
+                      (change)="toggle(service.code, $any($event.target).checked)">
+                    {{ service.name }}
+                  </label>
+                }
+              </div>
+            </details>
+          }
+
+          <button class="btn btn-primary btn-lg" [disabled]="problemForm.invalid">
+            {{ busy() ? 'Analisando…' : 'Ver sugestão de solução' }}
+          </button>
+        </fieldset>
+      </form>
+
+      @if (result(); as recommendation) {
+        <section class="recommendation" aria-label="Solução sugerida">
+          <h3>{{ recommendation.plan?.name || 'Uma solução personalizada para você' }}</h3>
+          <p>{{ recommendation.message }}</p>
+          @for (module of recommendation.modules; track module.code) {
+            <article>
+              <div class="recommendation-head">
+                <h4>{{ module.name }}</h4>
+                <span class="badge badge-{{ state(module.state).tone }}">{{ state(module.state).label }}</span>
+              </div>
+              <p>{{ module.reason }}</p>
+            </article>
+          } @empty {
+            <p>Nossa equipe fará uma análise individual do seu relato.</p>
+          }
+        </section>
+
+        <form #contactForm="ngForm" (ngSubmit)="submit()">
+          <fieldset [disabled]="busy() || sent()">
+            <h3>Vamos conversar sobre essa solução?</h3>
+            <div class="contact-fields">
+              <label>Seu nome<input name="name" [(ngModel)]="name" required minlength="2" maxlength="120" autocomplete="name"></label>
+              <label>E-mail<input type="email" name="email" [(ngModel)]="email" required email maxlength="254" autocomplete="email"></label>
+              <label>
+                Telefone com DDD
+                <input name="phone" [(ngModel)]="phone" required pattern="[0-9]{10,15}" inputmode="numeric" maxlength="15" autocomplete="tel">
+                <small>Somente números; inclua o código do país se necessário.</small>
+              </label>
+            </div>
+
+            <label class="honeypot" aria-hidden="true">Site<input name="website" [(ngModel)]="website" tabindex="-1" autocomplete="off"></label>
+
+            <label class="check consent">
+              <input name="consent" type="checkbox" [(ngModel)]="consent" required>
+              Autorizo a Thiago Solutions Digitais a receber meu relato e os dados de contato para
+              analisar esta solicitação e falar comigo sobre a solução sugerida.
+            </label>
+            <p class="fine">
+              Nome, telefone, e-mail, relato e sugestão serão registrados no painel administrativo e
+              encaminhados à equipe comercial por e-mail. Esses dados não aparecem publicamente.
+            </p>
+
+            <button class="btn btn-primary btn-lg" [disabled]="contactForm.invalid || !consent">
+              {{ sent() ? 'Solicitação registrada' : 'Enviar para nossa equipe' }}
+            </button>
+          </fieldset>
+        </form>
+      }
+    </div>
+  </section>
+</div>
